@@ -19,3 +19,5 @@ async def on_ready():
      
      
 @bot.command(pass_context=True)
+
+

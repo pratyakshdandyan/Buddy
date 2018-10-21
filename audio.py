@@ -8,7 +8,7 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 
 
-bot=commands.Bot(command_prefix='!b')
+bot=commands.Bot(command_prefix='/')
 
 
 from discord import opus
@@ -60,7 +60,7 @@ async def checking_voice(ctx):
 @bot.event
 async def on_ready():
    bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='!bhelp'))
+   await bot.change_presence(game=discord.Game(name='/help'))
    print(bot.user.name)
     
 @bot.command(pass_context=True)

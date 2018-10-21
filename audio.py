@@ -2,11 +2,14 @@ import discord
 import asyncio
 import youtube_dl
 import os
+import typing
+
 from discord.ext import commands
 from discord.ext.commands import Bot
 
 
 bot=commands.Bot(command_prefix='!b')
+
 
 from discord import opus
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll',
@@ -191,7 +194,7 @@ async def serverinfo(ctx):
     embed.add_field(name="Region", value=ctx.message.server.region, inline=True)
     embed.add_field(name="Roles", value=len(ctx.message.server.roles), inline=True)
     embed.add_field(name="Members", value=len(ctx.message.server.members))
-    embed.add_field(name="Emojis", value=ctx.message.server.emojis, inline=True)
+
     embed.set_thumbnail(url=ctx.message.server.icon_url)
     await bot.say(embed=embed)    
       
@@ -201,13 +204,33 @@ async def kick(ctx, user: discord.Member):
     await bot.say(":boot: Cya, {}. Ya loser!".format(user.name))
     await bot.kick(user)
  
-     
-     
+@bot.command(pass_context=True, no_pm=True)
+async def avatar(ctx, member: discord.Member):
+    """User Avatar"""
+    await bot.reply("{}".format(member.avatar_url))
+
+  
+@bot.command(pass_context=True)
+async def coinflip(ctx, guess: str, amount: float):
+    guesses = ('heads', 'tails')
+    guess = guess.lower()
+    if guess not in guesses:
+        await bot.say("Invalid guess.")
+        return
+    author = ctx.message.author
+    balance = get_dollars(author)
+    if balance < amount:
+        await bot.say(f"You don't have that much money.  Your balance is ${balance:.2f}")
+        return
+    result = random.sample(guesses)
+    if result == guess:
+        await bot.say("You won!")
+        add_dollars(author, amount)
+    else:
+        await bot.say("You lost!")
+        remove_dollars(author, amount)
 
 
-
-
-    
     
 @bot.command(pass_context=True)
 async def embed(ctx):

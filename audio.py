@@ -127,7 +127,15 @@ async def play(ctx, *,url):
 @bot.command(pass_context=True)
 async def queue(con):
     await bot.say("```There are currently {} audios in queue```".format(len(songs)))
-
+       
+@bot.command()
+async def echo(*ergs):
+  output = ''
+  for word in args:
+    output += word
+    output += ' '
+    await bot.say(output)
+    
 @bot.command(pass_context=True)
 async def pause(ctx):
     id = ctx.message.server.id

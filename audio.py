@@ -127,7 +127,7 @@ async def play(ctx, *,url):
 @bot.command(pass_context=True)
 async def queue(con):
     await bot.say("```There are currently {} audios in queue```".format(len(songs)))
-       
+
 @bot.command(pass_context=True)
 async def pause(ctx):
     id = ctx.message.server.id
@@ -210,28 +210,25 @@ async def avatar(ctx, member: discord.Member):
     await bot.reply("{}".format(member.avatar_url))
 
   
-@bot.command(pass_context=True)
-async def coinflip(ctx, guess: str, amount: float):
-    guesses = ('heads', 'tails')
-    guess = guess.lower()
-    if guess not in guesses:
-        await bot.say("Invalid guess.")
-        return
-    author = ctx.message.author
-    balance = get_dollars(author)
-    if balance < amount:
-        await bot.say(f"You don't have that much money.  Your balance is ${balance:.2f}")
-        return
-    result = random.sample(guesses)
-    if result == guess:
-        await bot.say("You won!")
-        add_dollars(author, amount)
-    else:
-        await bot.say("You lost!")
-        remove_dollars(author, amount)
 
 
-    
+@bot.event
+
+async def on_reaction_add(reaction, user):
+   channel = reaction.message.channel
+   await bot.send_message(channel, '{} has added {} to the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
+  
+@bot.event
+async def on_reaction_remove(reaction, user):
+   channel = reaction.message.channel
+   await bot.send_message(channel, '{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
+  
+@bot.command(pass_comtext=True)
+async def coinflip(ctx):
+   choices = ["Heads", "Tails"]
+   rancoin = random.choice(choices)
+   await bot.send(rancoin)
+
 @bot.command(pass_context=True)
 async def embed(ctx):
     embed = discord.Embed(title="test", description="my name imran", color=0x00ff00)

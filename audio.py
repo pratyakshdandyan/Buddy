@@ -63,6 +63,15 @@ async def on_ready():
    await bot.change_presence(game=discord.Game(name='/help'))
    print(bot.user.name)
     
+@bot.event
+async def on_message(message):
+  if message.content.startswith('/tutorial'):
+    await bot.send_message(message.channel, "HEWO!")
+    
+  if message.content.startswith('/coinflip'):
+    await bot.send_message(message.channel,random.choice(["Tails!",
+                                                          "Heads!"]))
+    
 @bot.command(pass_context=True)
 async def join(ctx):
     channel = ctx.message.author.voice.voice_channel

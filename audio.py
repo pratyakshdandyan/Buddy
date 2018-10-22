@@ -223,11 +223,13 @@ async def on_reaction_remove(reaction, user):
    channel = reaction.message.channel
    await bot.send_message(channel, '{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
   
-@bot.command(pass_comtext=True)
-async def coinflip(ctx):
-   choices = ["Heads", "Tails"]
-   rancoin = random.choice(choices)
-   await bot.send(rancoin)
+@bot.command(pass_context=True)
+async def echo(*ergs):
+  output = ''
+  for word in args:
+    output += word
+    output += ' '
+    await bot.say(output)
 
 @bot.command(pass_context=True)
 async def embed(ctx):

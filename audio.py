@@ -69,8 +69,7 @@ async def on_message(message):
     await bot.send_message(message.channel, "HEWO!")
     
   if message.content.startswith('/coinflip'):
-    await bot.send_message(message.channel,random.choice(["Tails!",
-                                                          "Heads!"]))
+    await bot.send_message(message.channel,"Tails!", "Heads!")
     
 @bot.command(pass_context=True)
 async def join(ctx):

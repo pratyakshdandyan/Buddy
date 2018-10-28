@@ -6,6 +6,7 @@ import typing
 
 from discord.ext import commands
 from discord.ext.commands import Bot
+from discord.ext.commands import has_permissions 
 
 
 bot=commands.Bot(command_prefix='/')
@@ -62,7 +63,6 @@ async def on_ready():
    bot.loop.create_task(all_false())
    await bot.change_presence(game=discord.Game(name='/help'))
    print(bot.user.name)
-
     
 @bot.command(pass_context=True)
 async def join(ctx):
@@ -171,18 +171,22 @@ async def ping(ctx):
 
 @bot.command(pass_context=True)
 async def info(ctx, user: discord.Member):
-    embed = discord.Embed(title="{}'s info".format(user.name), description="Here's what I could find.", color=0x00ff00)
+    embed = discord.Embed(title="{}'s info".format(user.name), description="Here's what I could find.", color=0xe67e22)
     embed.add_field(name="Name", value=user.name, inline=True)
     embed.add_field(name="ID", value=user.id, inline=True)
     embed.add_field(name="Status", value=user.status, inline=True)
     embed.add_field(name="Highest role", value=user.top_role)
     embed.add_field(name="Joined", value=user.joined_at)
+    embed.add_field(name="Created at", value=user.created_at)
+    
+    embed.add_field(name="nickname", value=user.nick)
+    embed.add_field(name="Bot", value=user.bot)
     embed.set_thumbnail(url=user.avatar_url)
     await bot.say(embed=embed)
 
 @bot.command(pass_context=True)
 async def serverinfo(ctx):
-    embed = discord.Embed(name="{}'s info".format(ctx.message.server.name), description="Here's what I could find.", color=0x00ff00)
+    embed = discord.Embed(title="{}'s info".format(ctx.message.server.name), description="Here's what I could find.", color=0x00ff00)
     embed.set_author(name="Will Ryan of DAGames")
     embed.add_field(name="Created at", value=ctx.message.server.created_at, inline=True)
     embed.add_field(name="Owner", value=ctx.message.server.owner, inline=True)
@@ -199,11 +203,8 @@ async def serverinfo(ctx):
     embed.set_thumbnail(url=ctx.message.server.icon_url)
     await bot.say(embed=embed)    
       
-@bot.command(pass_context=True)
 
-async def kick(ctx, user: discord.Member):
-    await bot.say(":boot: Cya, {}. Ya loser!".format(user.name))
-    await bot.kick(user)
+
  
 @bot.command(pass_context=True, no_pm=True)
 async def avatar(ctx, member: discord.Member):
@@ -224,13 +225,33 @@ async def on_reaction_remove(reaction, user):
    channel = reaction.message.channel
    await bot.send_message(channel, '{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
   
+
 @bot.command(pass_context=True)
-async def echo(*ergs):
-  output = ''
-  for word in args:
-    output += word
-    output += ' '
-    await bot.say(output)
+async def clear(ctx, number):
+   if ctx.message.author.server_permissions.administrator:
+    mgs = [] #Empty list to put all the messages in the log
+    number = int(number) #Converting the amount of messages to delete to an integer
+    async for x in bot.logs_from(ctx.message.channel, limit = number):
+        mgs.append(x)
+    await bot.delete_messages(mgs)
+
+@bot.command(pass_context=True)
+async def mute(ctx, member: discord.Member):
+    if ctx.message.author.server_permissions.administrator:
+        user = ctx.message.author
+        role = discord.utils.get(user.server.roles, name="Muted")
+        await bot.add_roles(user, role)
+        embed=discord.Embed(title="User Muted!", description="**{0}** was muted by **{1}**!".format(member, ctx.message.author), color=0xff00f6)
+        await bot.say(embed=embed)
+        
+@bot.command(pass_context=True)
+async def unmute(ctx, member: discord.Member):
+     if ctx.message.author.server_permissions.administrator or ctx.message.author.id == '455500545587675156':
+        role = discord.utils.get(member.server.roles, name='UnMuted')
+        await bot.add_roles(member, role)
+        embed=discord.Embed(title="User UnMuted!", description="**{0}** was unmuted by **{1}**!".format(member, ctx.message.author), color=0xff00f6)
+        await bot.say(embed=embed)
+
 
 @bot.command(pass_context=True)
 async def embed(ctx):

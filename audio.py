@@ -3,13 +3,13 @@ import asyncio
 import youtube_dl
 import os
 import typing
-
+import json
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.ext.commands import has_permissions 
+from discord.utils import get
 
-
-bot=commands.Bot(command_prefix='/')
+bot=commands.Bot(command_prefix='.')
 
 
 from discord import opus
@@ -61,7 +61,7 @@ async def checking_voice(ctx):
 @bot.event
 async def on_ready():
    bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='/help'))
+   await bot.change_presence(game=discord.Game(name='Test'))
    print(bot.user.name)
     
 @bot.command(pass_context=True)
@@ -69,7 +69,7 @@ async def join(ctx):
     channel = ctx.message.author.voice.voice_channel
     await bot.join_voice_channel(channel)
     in_voice.append(ctx.message.server.id)
-
+    await bot.say("JOIN")
 
 async def player_in(con):  # After function for music
     try:
@@ -133,28 +133,33 @@ async def queue(con):
 async def pause(ctx):
     id = ctx.message.server.id
     players[id].pause()
-
+    await bot.say("PAUSE")
+    
 @bot.command(pass_context=True)
 async def resume(ctx):
     players[ctx.message.server.id].resume()
-          
+    await bot.say("RESUME")
+    
+    
 @bot.command(pass_context=True)
 async def volume(ctx, vol:float):
     volu = float(vol)
     players[ctx.message.server.id].volume=volu
-
+    await bot.say("VOLUME")
 
 @bot.command(pass_context=True)
 async def skip(con): #skipping songs?
-  songs[con.message.server.id]
-    
+    songs[con.message.server.id].skip()
+    songs.skip()
     
     
 @bot.command(pass_context=True)
 async def stop(con):
     players[con.message.server.id].stop()
     songs.clear()
-
+    await bot.say("STOP")
+    
+    
 @bot.command(pass_context=True)
 async def leave(ctx):
     pos=in_voice.index(ctx.message.server.id)
@@ -163,7 +168,10 @@ async def leave(ctx):
     voice_client=bot.voice_client_in(server)
     await voice_client.disconnect()
     songs.clear()
-
+    await bot.say("DISCONNECT")
+    
+    
+    
 @bot.command(pass_context=True)
 async def ping(ctx):
     await bot.say(":ping_pong: ping!! xSSS")
@@ -246,13 +254,153 @@ async def mute(ctx, member: discord.Member):
         
 @bot.command(pass_context=True)
 async def unmute(ctx, member: discord.Member):
-     if ctx.message.author.server_permissions.administrator or ctx.message.author.id == '455500545587675156':
-        role = discord.utils.get(member.server.roles, name='UnMuted')
-        await bot.add_roles(member, role)
+     if ctx.message.author.server_permissions.administrator:
+        user = ctx.message.author
+        role = discord.utils.get(user.server.roles, name="UnMuted")
+        await bot.add_roles(user, role)
         embed=discord.Embed(title="User UnMuted!", description="**{0}** was unmuted by **{1}**!".format(member, ctx.message.author), color=0xff00f6)
         await bot.say(embed=embed)
 
+@bot.command(pass_context=True)
+async def joined(ctx, member: discord.Member):
+    """Says when a member joined."""
+    await bot.say('{0.name} joined in {0.joined_at}'.format(member))
 
+@bot.command(pass_context=True)
+async def kick(ctx, member: discord.Member):
+    if ctx.message.author.server_permissions.administrator:
+       await bot.kick(member)
+
+        
+@bot.command(pass_context=True)
+async def ban(ctx, member: discord.Member, days: int = 1):
+    if ctx.message.author.server_permissions.administrator:
+        await bot.ban(member, days)
+    else:
+        await bot.say("You don't have permission to use this command.")
+        
+
+@bot.command(pass_context=True)
+async def get_id(ctx):
+    await bot.say("Channel id: {}".format(ctx.message.channel.id))       
+    
+@bot.command()
+async def repeat(ctx, times : int, content='repeating...'):
+    """Repeats a message multiple times."""
+    for i in range(times):
+        await bot.say(content) 
+   
+@bot.command()
+async def invite():
+  	"""Bot Invite"""
+  	await bot.say("\U0001f44d")
+  	await bot.whisper("Add me with this link {}".format(discord.utils.oauth_url(bot.user.id)))
+
+@bot.event
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        for page in pages:
+            em = discord.Embed(description=page.strip("```").replace('<', '[').replace('>', ']'),
+                               color=discord.Color.blue())
+            await bot.send_message(ctx.message.channel, embed=em)
+    else:
+        pages = bot.formatter.format_help_for(ctx, ctx.command)
+        for page in pages:
+            em = discord.Embed(description=page.strip("```").replace('<', '[').replace('>', ']'),
+                               color=discord.Color.blue())
+            await bot.send_message(ctx.message.channel, embed=em)    
+    
+@bot.command()
+async def guildcount():
+  	"""Bot Guild Count"""
+  	await bot.say("**I'm in {} Guilds!**".format(len(bot.servers)))  
+    
+    
+    
+   
+@bot.command(pass_context=True)
+async def guildid(ctx):
+	  """Guild ID"""
+	  await bot.say("`{}`".format(ctx.message.server.id))   
+    
+@bot.command(pass_context=True, no_pm=True)
+async def guildicon(ctx):
+    """Guild Icon"""
+    await bot.reply("{}".format(ctx.message.server.icon_url))
+    
+@bot.command(pass_context=True, hidden=True)
+async def setgame(ctx, *, game):
+    if ctx.message.author.id not in owner:
+        return
+    game = game.strip()
+    if game != "":
+        try:
+            await bot.change_presence(game=discord.Game(name=game))
+        except:
+            await bot.say("Failed to change game")
+        else:
+            await bot.say("Successfuly changed game to {}".format(game))
+    else:
+        await bot.send_cmd_help(ctx)    
+    
+    
+@bot.command(pass_context=True, hidden=True)
+async def setname(ctx, *, name):
+    if ctx.message.author.id not in owner:
+        return
+    name = name.strip()
+    if name != "":
+        try:
+            await bot.edit_profile(username=name)
+        except:
+            await bot.say("Failed to change name")
+        else:
+            await bot.say("Successfuly changed name to {}".format(name))
+    else:
+        await bot.send_cmd_help(ctx)
+        
+        
+
+
+newUserMessage = """ # customise this to the message you want to send new users
+You
+can
+put
+your
+multiline
+message
+here!
+"""
+
+@bot.event
+async def on_member_join(member):
+    print("Recognised that a member called " + member.name + " joined")
+    await bot.send_message(member, newUserMessage)
+    print("Sent message to " + member.name)
+
+    # give member the steam role here
+    ## to do this the bot must have 'Manage Roles' permission on server, and role to add must be lower than bot's top role
+    role = discord.utils.get(member.server.roles, name="name-of-your-role")
+    await bot.add_roles(member, role)
+    print("Added role '" + role.name + "' to " + member.name)        
+        
+    
+  
+    
+@bot.event
+async def on_member_join(member):
+    channel = get(member.server.channels, name="general")
+    await bot.send_message(channel,"welcome")
+
+
+
+    
+    
+    
+    
+
+        
 @bot.command(pass_context=True)
 async def embed(ctx):
     embed = discord.Embed(title="test", description="my name imran", color=0x00ff00)

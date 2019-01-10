@@ -9,7 +9,7 @@ from discord.ext.commands import Bot
 from discord.ext.commands import has_permissions 
 from discord.utils import get
 
-bot=commands.Bot(command_prefix='.')
+bot=commands.Bot(command_prefix='/')
 
 
 from discord import opus
@@ -61,7 +61,7 @@ async def checking_voice(ctx):
 @bot.event
 async def on_ready():
    bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='Test'))
+   await bot.change_presence(game=discord.Game(name='/help'))
    print(bot.user.name)
     
 @bot.command(pass_context=True)
@@ -403,7 +403,7 @@ async def on_member_join(member):
         
 @bot.command(pass_context=True)
 async def embed(ctx):
-    embed = discord.Embed(title="test", description="my name imran", color=0x00ff00)
+    embed = discord.Embed(title="test", description="my name Pratyaksh Dandyan", color=0x00ff00)
     embed.set_footer(text="this is a footer")
     embed.set_author(name="Will Ryan of DAGames")
     embed.add_field(name="This is a field", value="no it isn't", inline=True)

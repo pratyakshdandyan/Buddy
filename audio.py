@@ -431,9 +431,9 @@ async def on_member_join(member):
 @bot.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
-    embed.add_field(name='Help Server',value='https://discord.gg/cQZBYFV', inline=True)
+    embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
     embed.add_field(name='Command Prefix', value='**.**', inline=True)
-    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/501659280680681472/5a564024b1095fef0caf7529f79439d4.webp?size=1024')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.webp?size=1024')
     embed.add_field(name='join', value='.join', inline=True)
     embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
     embed.add_field(name='queue', value='List the queue.', inline=True)
@@ -461,7 +461,7 @@ async def help(ctx):
     embed.add_field(name='dice', value='fun command', inline=True)
     embed.add_field(name='online', value='Members Online.', inline=True)
     embed.add_field(name='offline', value='Members offline.', inline=True)
-    embed.set_footer(text='Created By: imran',
+    embed.set_footer(text='Created By: Pratyaksh and Imran',
                 icon_url='https://raw.githubusercontent.com/CharmingMother/Kurusaki/master/img/Dong%20Cheng.png')
     await bot.say(embed=embed)
     

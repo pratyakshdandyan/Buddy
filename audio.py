@@ -7,10 +7,13 @@ import json
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.ext.commands import has_permissions 
-from discord.utils import get
+from discord.utils import get,find
+import requests as rq
+import random
+
 
 bot=commands.Bot(command_prefix='/')
-
+bot.remove_command('help')
 
 from discord import opus
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll',
@@ -61,7 +64,7 @@ async def checking_voice(ctx):
 @bot.event
 async def on_ready():
    bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='/help'))
+   await bot.change_presence(game=discord.Game(name='Test2'))
    print(bot.user.name)
     
 @bot.command(pass_context=True)
@@ -195,7 +198,7 @@ async def info(ctx, user: discord.Member):
 @bot.command(pass_context=True)
 async def serverinfo(ctx):
     embed = discord.Embed(title="{}'s info".format(ctx.message.server.name), description="Here's what I could find.", color=0x00ff00)
-    embed.set_author(name="Will Ryan of DAGames")
+    embed.set_author(name="Team Ghost")
     embed.add_field(name="Created at", value=ctx.message.server.created_at, inline=True)
     embed.add_field(name="Owner", value=ctx.message.server.owner, inline=True)
     embed.add_field(name="Name", value=ctx.message.server.name, inline=True)
@@ -226,12 +229,16 @@ async def avatar(ctx, member: discord.Member):
 
 async def on_reaction_add(reaction, user):
    channel = reaction.message.channel
-   await bot.send_message(channel, '{} has added {} to the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
+
+   lol = get(user.server.channels, name="logs")
+   await bot.send_message(lol,'{} has added {} to the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
   
 @bot.event
 async def on_reaction_remove(reaction, user):
    channel = reaction.message.channel
-   await bot.send_message(channel, '{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
+
+   lol = get(user.server.channels, name="logs")
+   await bot.send_message(lol,'{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
   
 
 @bot.command(pass_context=True)
@@ -243,14 +250,22 @@ async def clear(ctx, number):
         mgs.append(x)
     await bot.delete_messages(mgs)
 
-@bot.command(pass_context=True)
+
+	
+@bot.command(pass_context = True)
 async def mute(ctx, member: discord.Member):
-    if ctx.message.author.server_permissions.administrator:
-        user = ctx.message.author
-        role = discord.utils.get(user.server.roles, name="Muted")
-        await bot.add_roles(user, role)
+     if ctx.message.author.server_permissions.administrator or ctx.message.author.id == '455500545587675156':
+        role = discord.utils.get(member.server.roles, name='Muted')
+        await bot.add_roles(member, role)
         embed=discord.Embed(title="User Muted!", description="**{0}** was muted by **{1}**!".format(member, ctx.message.author), color=0xff00f6)
         await bot.say(embed=embed)
+     else:
+        embed=discord.Embed(title="Permission Denied.", description="You don't have permission to use this command.", color=0xff00f6)
+        await bot.say(embed=embed)	
+	
+	
+	
+	
         
 @bot.command(pass_context=True)
 async def unmute(ctx, member: discord.Member):
@@ -266,10 +281,16 @@ async def joined(ctx, member: discord.Member):
     """Says when a member joined."""
     await bot.say('{0.name} joined in {0.joined_at}'.format(member))
 
+
+
 @bot.command(pass_context=True)
-async def kick(ctx, member: discord.Member):
-    if ctx.message.author.server_permissions.administrator:
-       await bot.kick(member)
+async def kick(con,user:discord.Member=None):
+    if con.message.author.server_permissions.kick_members == True or con.message.author.server_permissions.administrator == True:
+        await bot.kick(user)
+        await bot.send_message(con.message.channel,"User {} has been kicked".format(user.name))
+    else:
+        await bot.send_message(con.message.channel, "**Insufficient Permissions To Kick Member**")
+
 
         
 @bot.command(pass_context=True)
@@ -278,6 +299,18 @@ async def ban(ctx, member: discord.Member, days: int = 1):
         await bot.ban(member, days)
     else:
         await bot.say("You don't have permission to use this command.")
+	
+	
+@bot.command(pass_context=True)
+async def unban(con,user:int):
+    try:
+        who=await bot.get_user_info(user)
+        await bot.unban(con.message.server,who)
+        await bot.say("User has been unbanned")
+    except:
+        await bot.say("Something went wrong")
+		
+
         
 
 @bot.command(pass_context=True)
@@ -390,22 +423,147 @@ async def on_member_join(member):
     
 @bot.event
 async def on_member_join(member):
-    channel = get(member.server.channels, name="general")
+    channel = get(member.server.channels, name="welcome")
     await bot.send_message(channel,"welcome")
+	
+	
+
+@bot.command(pass_context=True)
+async def help(ctx):
+    embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
+    embed.add_field(name='Help Server',value='https://discord.gg/cQZBYFV', inline=True)
+    embed.add_field(name='Command Prefix', value='**.**', inline=True)
+    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/501659280680681472/5a564024b1095fef0caf7529f79439d4.webp?size=1024')
+    embed.add_field(name='join', value='.join', inline=True)
+    embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
+    embed.add_field(name='queue', value='List the queue.', inline=True)
+    embed.add_field(name='resume', value='Pause and resume.', inline=True)     
+    embed.add_field(name='invite', value='Bot invite', inline=True)
+    embed.add_field(name='pause', value='Pause and resume.', inline=True)
+    embed.add_field(name='volume', value='Set the volume, 1% - 150%.', inline=True)
+    embed.add_field(name='skip', value='Skip to the next track.', inline=True)
+    embed.add_field(name='stop', value='Stop playback and clear the queue.', inline=True)
+    embed.add_field(name='leave', value='Disconnect from the voice channel.', inline=True)
+    embed.add_field(name='ping', value='.ping', inline=True)	  
+    embed.add_field(name='info', value='Show information about a user.', inline=True)	  
+    embed.add_field(name='serverinfo', value='Show server information.', inline=True)	  
+    embed.add_field(name='avatar', value='show user avatar', inline=True)  
+    embed.add_field(name='clear', value='clear chats', inline=True)	 
+    embed.add_field(name='mute', value='Mute users.', inline=True)
+    embed.add_field(name='unmute', value='unmete user.', inline=True)
+    embed.add_field(name='get_id', value='.get_id', inline=True)
+    embed.add_field(name='guildcount', value='Bot Guild Count', inline=True)
+    embed.add_field(name='guildid', value='Guild ID', inline=True)
+    embed.add_field(name='guildicon', value='Guild Icon', inline=True)  
+    embed.add_field(name='joined', value='Says when a member joined.', inline=True)
+    embed.add_field(name='repeat', value=' Repeats a message multiple times.', inline=True)	
+    embed.add_field(name='ban', value='Ban a user from this server.', inline=True)
+    embed.add_field(name='dice', value='fun command', inline=True)
+    embed.add_field(name='online', value='Members Online.', inline=True)
+    embed.add_field(name='offline', value='Members offline.', inline=True)
+    embed.set_footer(text='Created By: imran',
+                icon_url='https://raw.githubusercontent.com/CharmingMother/Kurusaki/master/img/Dong%20Cheng.png')
+    await bot.say(embed=embed)
+    
+
+async def fun(con):
+    msg = discord.Embed(title=None, description='**Fun commands for Kurusai**')
+    msg.add_field(name='Name', value='s.dice <min> <max>\n\
+    s.game <name>\n\
+    s.watching <name>\n\
+    s.listening <name>\n\
+    s.catfact\n\
+    s.dogfact\n\
+    s.bunnyfact\n\
+    s.pifact\n\
+    s.randomanime\n\
+    s.randommovie\n\
+    s.randomshow\n\
+    s.cat\n\
+    s.cookie <@user>\n\
+    s.neko or s.neko nsfw\n\
+    s.dog\n\
+    s.bunny\n\
+    s.tts <message>\n\
+    s.say <message>\n\
+    s.worldchat\n\
+    s.timer <time>', inline=True)
+    msg.add_field(name='Command Usage', value='Role random number from <min> <max>\n\
+    Changes game playing status of bot\n\
+    Changes watching status of bot\n\
+    Changes Listening status of bot\n\
+    Get random cat fact\n\
+    Get a random dog fact\n\
+    Get a random bunny fact\n\
+    Get a random pi(3.14) fact\n\
+    Get random anime\n\
+    Get random movie\n\
+    Get random show\n\
+    Get a picture of random cat\n\
+    Give random amount of cookie to mentioned user\n\
+    Random Neko girl picture\n\
+    Random bunny picture\n\
+    Get random dog picture\n\
+    Use text to speech on bot\n\
+    Make the bot say what you want\n\
+    Creates a text channel that connects to other servers\n\
+    Creates a countdown timer', inline=True)
+    await bot.send_message(con.message.channel, embed=msg)
+	
+	
+
+
+@bot.event
+async def on_message_delete(message):
+    fmt = '{0.author.name} has deleted the message:\n{0.content}'
+    await bot.send_message(message.channel, fmt.format(message))	
+	
+@bot.event
+async def on_message_edit(before, after):
+    fmt = '**{0.author}** edited their message:\n{1.content}'
+    await bot.send_message(after.channel, fmt.format(after, before))
+	
+	
+    
+@bot.command(pass_context=True)
+async def online(con):
+    amt = 0
+    for i in con.message.server.members:
+        if i.status != discord.Status.offline:
+            amt += 1
+    await bot.send_message(con.message.channel, "**Currently `{}` Members Online In `{}`**".format(amt,con.message.server.name))
 
 
 
-    
-    
-    
-    
+@bot.command(pass_context=True)
+async def offline(con):
+    amt = 0
+    for i in con.message.server.members:
+        if i.status == discord.Status.offline:
+            amt += 1
+    await bot.send_message(con.message.channel, "**Currently `{}` Members Offline In `{}`**".format(amt,con.message.server.name))
+
+
+
+import random
+@bot.command(pass_context=True)
+async def dice( con, min1=1, max1=6):
+    """GENERATES A RANDOM FROM MIN - MAX
+    MIN DEFAULT = 1
+    MAX DEFAULT = 6
+    MIN1 = THE SMALLEST LIMIT TO GENERATE A RANDOM NUMBER
+    MAX1 = THE LIMIT TO GENERATE A RANDOM NUMBER"""
+    r = random.randint(min1, max1)
+    await bot.send_message(con.message.channel, "**{}**".format(r))
+
+
 
         
 @bot.command(pass_context=True)
 async def embed(ctx):
     embed = discord.Embed(title="test", description="my name Pratyaksh Dandyan", color=0x00ff00)
     embed.set_footer(text="this is a footer")
-    embed.set_author(name="Will Ryan of DAGames")
+    embed.set_author(name="Team Ghost")
     embed.add_field(name="This is a field", value="no it isn't", inline=True)
     await bot.say(embed=embed)
    

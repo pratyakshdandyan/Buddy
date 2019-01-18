@@ -437,7 +437,7 @@ async def help(ctx):
     embed.add_field(name='join', value='.join', inline=True)
     embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
     embed.add_field(name='queue', value='List the queue.', inline=True)
-    embed.add_field(name='resume', value='Pause and resume.', inline=True)     
+    embed.add_field(name='resume', value='Pause and resume.', inline=True) 
     embed.add_field(name='invite', value='Bot invite', inline=True)
     embed.add_field(name='pause', value='Pause and resume.', inline=True)
     embed.add_field(name='volume', value='Set the volume, 1% - 150%.', inline=True)

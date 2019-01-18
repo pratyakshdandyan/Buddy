@@ -433,7 +433,7 @@ async def help(ctx):
     embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
     embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
     embed.add_field(name='Command Prefix', value='**.**', inline=True)
-    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256)
+    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256')
     embed.add_field(name='join', value='.join', inline=True)
     embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
     embed.add_field(name='queue', value='List the queue.', inline=True)

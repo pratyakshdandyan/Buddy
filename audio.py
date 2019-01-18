@@ -433,7 +433,7 @@ async def help(ctx):
     embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
     embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
     embed.add_field(name='Command Prefix', value='**.**', inline=True)
-    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.webp?size=1024')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256)
     embed.add_field(name='join', value='.join', inline=True)
     embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
     embed.add_field(name='queue', value='List the queue.', inline=True)
@@ -461,7 +461,7 @@ async def help(ctx):
     embed.add_field(name='dice', value='fun command', inline=True)
     embed.add_field(name='online', value='Members Online.', inline=True)
     embed.add_field(name='offline', value='Members offline.', inline=True)
-    embed.set_footer(text='Created By: Pratyaksh and Imran',
+    embed.set_footer(text='Created By: imran',
                 icon_url='https://raw.githubusercontent.com/CharmingMother/Kurusaki/master/img/Dong%20Cheng.png')
     await bot.say(embed=embed)
     
@@ -513,16 +513,7 @@ async def fun(con):
 	
 
 
-@bot.event
-async def on_message_delete(message):
-    fmt = '{0.author.name} has deleted the message:\n{0.content}'
-    await bot.send_message(message.channel, fmt.format(message))	
-	
-@bot.event
-async def on_message_edit(before, after):
-    fmt = '**{0.author}** edited their message:\n{1.content}'
-    await bot.send_message(after.channel, fmt.format(after, before))
-	
+
 	
     
 @bot.command(pass_context=True)

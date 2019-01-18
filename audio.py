@@ -289,7 +289,8 @@ async def kick(con,user:discord.Member=None):
         await bot.kick(user)
         await bot.send_message(con.message.channel,"User {} has been kicked".format(user.name))
     else:
-        await bot.send_message(con.message.channel, "**Insufficient Permissions To Kick Member**")
+        embed=discord.Embed(title="Permission Denied.", description="You don't have permission to use this command.", color=0xff00f6)
+        await bot.say(embed=embed)
 
 
         
@@ -298,7 +299,8 @@ async def ban(ctx, member: discord.Member, days: int = 1):
     if ctx.message.author.server_permissions.administrator:
         await bot.ban(member, days)
     else:
-        await bot.say("You don't have permission to use this command.")
+        embed=discord.Embed(title="Permission Denied.", description="You don't have permission to use this command.", color=0xff00f6)
+        await bot.say(embed=embed)
 	
 	
 @bot.command(pass_context=True)

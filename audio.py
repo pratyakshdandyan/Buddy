@@ -461,7 +461,7 @@ async def help(ctx):
     embed.add_field(name='dice', value='fun command', inline=True)
     embed.add_field(name='online', value='Members Online.', inline=True)
     embed.add_field(name='offline', value='Members offline.', inline=True)
-    embed.set_footer(text='Created By: imran',
+    embed.set_footer(text='Created By: Pratyaksh and Imran',
                 icon_url='https://raw.githubusercontent.com/CharmingMother/Kurusaki/master/img/Dong%20Cheng.png')
     await bot.say(embed=embed)
     

@@ -12,7 +12,7 @@ import requests as rq
 import random
 
 
-bot=commands.Bot(command_prefix='/')
+bot=commands.Bot(command_prefix='b.')
 bot.remove_command('help')
 
 from discord import opus
@@ -64,7 +64,7 @@ async def checking_voice(ctx):
 @bot.event
 async def on_ready():
    bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='/help'))
+   await bot.change_presence(game=discord.Game(name='b.help'))
    print(bot.user.name)
     
 @bot.command(pass_context=True)
@@ -398,27 +398,7 @@ async def setname(ctx, *, name):
         
 
 
-newUserMessage = """ # customise this to the message you want to send new users
-You
-can
-put
-your
-multiline
-message
-here!
-"""
-
-@bot.event
-async def on_member_join(member):
-    print("Recognised that a member called " + member.name + " joined")
-    await bot.send_message(member, newUserMessage)
-    print("Sent message to " + member.name)
-
-    # give member the steam role here
-    ## to do this the bot must have 'Manage Roles' permission on server, and role to add must be lower than bot's top role
-    role = discord.utils.get(member.server.roles, name="name-of-your-role")
-    await bot.add_roles(member, role)
-    print("Added role '" + role.name + "' to " + member.name)        
+       
         
     
   
@@ -426,7 +406,12 @@ async def on_member_join(member):
 @bot.event
 async def on_member_join(member):
     channel = get(member.server.channels, name="welcome")
-    await bot.send_message(channel,"welcome")
+    embed = discord.Embed(title='**New Member Join**', description="Welcome,{} to the Chillspot! Be sure to have fun!🎉🎊".format(member.mention), colour=0x7ED6DE)
+    embed.set_author(name=member.name, icon_url=member.avatar_url)
+    embed.add_field(name="Name", value=member.name, inline=True)
+    embed.add_field(name="ID", value=member.id, inline=True)
+    embed.set_thumbnail(url=member.avatar_url)
+    await bot.send_message(channel, embed=embed)
 	
 	
 
@@ -434,85 +419,81 @@ async def on_member_join(member):
 async def help(ctx):
     embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
     embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
-    embed.add_field(name='Command Prefix', value='**/**', inline=True)
+    embed.add_field(name='Command Prefix', value='**b.**', inline=True)
     embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256')
-    embed.add_field(name='join', value='.join', inline=True)
-    embed.add_field(name='play', value='Play a URL or search for a track.', inline=True)
-    embed.add_field(name='queue', value='List the queue.', inline=True)
-    embed.add_field(name='resume', value='Pause and resume.', inline=True) 
-    embed.add_field(name='invite', value='Bot invite', inline=True)
-    embed.add_field(name='pause', value='Pause and resume.', inline=True)
-    embed.add_field(name='volume', value='Set the volume, 1% - 150%.', inline=True)
-    embed.add_field(name='skip', value='Skip to the next track.', inline=True)
-    embed.add_field(name='stop', value='Stop playback and clear the queue.', inline=True)
-    embed.add_field(name='leave', value='Disconnect from the voice channel.', inline=True)
-    embed.add_field(name='ping', value='.ping', inline=True)	  
-    embed.add_field(name='info', value='Show information about a user.', inline=True)	  
-    embed.add_field(name='serverinfo', value='Show server information.', inline=True)	  
-    embed.add_field(name='avatar', value='show user avatar', inline=True)  
-    embed.add_field(name='clear', value='clear chats', inline=True)	 
-    embed.add_field(name='mute', value='Mute users.', inline=True)
-    embed.add_field(name='unmute', value='unmete user.', inline=True)
-    embed.add_field(name='get_id', value='.get_id', inline=True)
-    embed.add_field(name='guildcount', value='Bot Guild Count', inline=True)
-    embed.add_field(name='guildid', value='Guild ID', inline=True)
-    embed.add_field(name='guildicon', value='Guild Icon', inline=True)  
-    embed.add_field(name='joined', value='Says when a member joined.', inline=True)
-    embed.add_field(name='repeat', value=' Repeats a message multiple times.', inline=True)	
-    embed.add_field(name='ban', value='Ban a user from this server.', inline=True)
-    embed.add_field(name='dice', value='fun command', inline=True)
-    embed.add_field(name='online', value='Members Online.', inline=True)
-    embed.add_field(name='offline', value='Members offline.', inline=True)
-    embed.set_footer(text='Created By: Pratyaksh and Imran',
-                icon_url='https://raw.githubusercontent.com/CharmingMother/Kurusaki/master/img/Dong%20Cheng.png')
+    embed.add_field(name='General commands', value='b.general - to get list of general commands', inline=True)	  
+    embed.add_field(name='moderation commands', value='b.moderations - to get list of moderation commands', inline=True)
+    embed.add_field(name='Fun commands', value='b.fun - to get list of fun commands', inline=True)
+    embed.set_footer(text="Requested by: " + author.name)
     await bot.say(embed=embed)
+
+@bot.command(pass_context=True)
+async def help general(ctx):
+	embed = discord.Embed(title="ping", description="pong....", color=0xFFFF)
+	embed.add_field(name="info", value="Show information about a user.")
+	embed.add_field(name="serverinfo", value="Show server information.")
+	embed.add_field(name="get_id", value="b.get_id")
+	embed.add_field(name="guildicon", value="b.guildicon")
+	embed.add_field(name="avatar", value="b.avatar @user [show user avatar")
+	embed.add_field(name="guildcount", value="b.guildcount")
+	embed.add_field(name="guildid", value="b.guildid")
+	await bot.say(embed=embed)
+	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
+	await bot.send_message(channel, embed=embed)
+
+@bot.command(pass_context=True)
+async def help moderations(ctx):
+	embed = discord.Embed(title="ban", description="b.ban @user [your reason here]", color=0xFFFF)
+	embed.add_field(name="kick", value="b.kick @user [your reason here]")
+	embed.add_field(name="warn", value="b.warn @user [your reason here]")
+	embed.add_field(name="mute", value="b.mute @user [your reason here]")
+	embed.add_field(name="unmute", value="b.unmute @user [your reason here]")
+	embed.add_field(name="unban", value="b.unban user.id | for example d!unban 277983178914922497")
+	await bot.say(embed=embed)
+	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
+	await bot.send_message(channel, embed=embed)
+	
+@bot.command(pass_context=True)	
+async def help fun(ctx):
+	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF))
+	embed.add_field(name='dice', value='50 50 chance', inline=True)
+        embed.add_field(name='online', value='Members Online.', inline=True)
+        embed.add_field(name='offline', value='Members offline.', inline=True)
+	embed.add_field(name='coinflip', value='50 50 chance of getting tails and heads.', inline=True)
+	await bot.say(embed=embed)
+	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
+	await bot.send_message(channel, embed=embed)
+
+    
     
 
-async def fun(con):
-    msg = discord.Embed(title=None, description='**Fun commands for Kurusai**')
-    msg.add_field(name='Name', value='s.dice <min> <max>\n\
-    s.game <name>\n\
-    s.watching <name>\n\
-    s.listening <name>\n\
-    s.catfact\n\
-    s.dogfact\n\
-    s.bunnyfact\n\
-    s.pifact\n\
-    s.randomanime\n\
-    s.randommovie\n\
-    s.randomshow\n\
-    s.cat\n\
-    s.cookie <@user>\n\
-    s.neko or s.neko nsfw\n\
-    s.dog\n\
-    s.bunny\n\
-    s.tts <message>\n\
-    s.say <message>\n\
-    s.worldchat\n\
-    s.timer <time>', inline=True)
-    msg.add_field(name='Command Usage', value='Role random number from <min> <max>\n\
-    Changes game playing status of bot\n\
-    Changes watching status of bot\n\
-    Changes Listening status of bot\n\
-    Get random cat fact\n\
-    Get a random dog fact\n\
-    Get a random bunny fact\n\
-    Get a random pi(3.14) fact\n\
-    Get random anime\n\
-    Get random movie\n\
-    Get random show\n\
-    Get a picture of random cat\n\
-    Give random amount of cookie to mentioned user\n\
-    Random Neko girl picture\n\
-    Random bunny picture\n\
-    Get random dog picture\n\
-    Use text to speech on bot\n\
-    Make the bot say what you want\n\
-    Creates a text channel that connects to other servers\n\
-    Creates a countdown timer', inline=True)
-    await bot.send_message(con.message.channel, embed=msg)
 	
 	
+	
+	
+	
+	
+	
+	
+	
+@bot.command(pass_context=True)
+async def coinflip(ctx):
+    user = ctx.message.author
+    side = random.randint(0, 1)
+    server = ctx.message.server
+    join = discord.Embed(title="devil ", description=" ", color=0x008790)
+    if side == 0:
+        join.add_field(name="the coin landed on:", value="Heads!", inline=False)
+        join.set_footer(text='Requested by: ' + user.name)
+        await bot.send_message(ctx.message.channel, embed=join)
+    if side == 1:
+        join.add_field(name="the coin landed on:", value="Tails!", inline=False)
+        join.set_footer(text='Requested by: ' + user.name)
+        await bot.send_message(ctx.message.channel, embed=join)
+        
+        embed = discord.Embed(title=f"User: {ctx.message.author.name} have used coinflip command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
+
+        await bot.send_message(channel, embed=embed)	
 
 
 

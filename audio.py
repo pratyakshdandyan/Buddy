@@ -437,7 +437,15 @@ async def on_member_join(member):
     embed.set_thumbnail(url=member.avatar_url)
     await bot.send_message(channel, embed=embed)
 	
-	
+@bot.event
+async def on_member_remove(member):
+    channel = get(member.server.channels, name="welcome")
+    embed = discord.Embed(title='**Member Left**', description="goodbye😞,{}".format(member.mention), colour=0xff00f6)
+    embed.set_author(name=member.name, icon_url=member.avatar_url)
+    embed.add_field(name="Name", value=member.name, inline=True)
+    embed.add_field(name="ID", value=member.id, inline=True)
+    embed.set_thumbnail(url=member.avatar_url)
+    await bot.send_message(channel, embed=embed)	
 
 @bot.command(pass_context=True)
 async def help(ctx):

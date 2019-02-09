@@ -4,13 +4,16 @@ import youtube_dl
 import os
 import typing
 import json
+import discord, datetime, time
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.ext.commands import has_permissions 
+from time import localtime, strftime
 from discord.utils import get,find
 import requests as rq
 import random
 
+start_time = time.time()
 
 bot=commands.Bot(command_prefix='b.')
 bot.remove_command('help')
@@ -259,7 +262,17 @@ async def botinfo(ctx):
 	await bot.say(embed=embed)
 
 
-
+@bot.command()
+async def stats():
+	servers = list(bot.servers)
+	current_time = time.time()
+	difference = int(round(current_time - start_time))
+	text = str(datetime.timedelta(seconds=difference))
+	embed = discord.Embed(title="Servers:", description=f"{str(len(servers))}", color=0xFFFF)
+	embed.add_field(name="Users:", value=f"{str(len(set(bot.get_all_members())))}")
+	embed.add_field(name="Uptime:", value=f"{text}")
+	embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.webp?size=1024")
+	await bot.say(embed=embed) 
 
 
 	

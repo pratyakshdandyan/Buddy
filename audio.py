@@ -457,7 +457,6 @@ async def help_moderations(ctx):
 async def help_fun(ctx):
 	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF)
 	embed.add_field(name="dice", value="50 50 chance")
-        embed.add_field(name="offline", value="Members offline.")
 	embed.add_field(name="coinflip", value="50 50 chance of getting tails and heads.")
 	await bot.say(embed=embed)
 	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)

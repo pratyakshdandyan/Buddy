@@ -455,7 +455,7 @@ async def help_moderations(ctx):
 	
 @bot.command(pass_context=True)	
 async def help_fun(ctx):
-	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF))
+	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF)
 	embed.add_field(name='dice', value='50 50 chance', inline=True)
         embed.add_field(name='online', value='Members Online.', inline=True)
         embed.add_field(name='offline', value='Members offline.', inline=True)

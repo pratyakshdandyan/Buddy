@@ -421,14 +421,14 @@ async def help(ctx):
     embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
     embed.add_field(name='Command Prefix', value='**b.**', inline=True)
     embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256')
-    embed.add_field(name='General commands', value='b.general - to get list of general commands', inline=True)	  
-    embed.add_field(name='moderation commands', value='b.moderations - to get list of moderation commands', inline=True)
-    embed.add_field(name='Fun commands', value='b.fun - to get list of fun commands', inline=True)
+    embed.add_field(name='General commands', value='b.help_general - to get list of general commands', inline=True)	  
+    embed.add_field(name='moderation commands', value='b.help_moderations - to get list of moderation commands', inline=True)
+    embed.add_field(name='Fun commands', value='b.help_fun - to get list of fun commands', inline=True)
     embed.set_footer(text="Requested by: " + author.name)
     await bot.say(embed=embed)
 
 @bot.command(pass_context=True)
-async def help general(ctx):
+async def help_general(ctx):
 	embed = discord.Embed(title="ping", description="pong....", color=0xFFFF)
 	embed.add_field(name="info", value="Show information about a user.")
 	embed.add_field(name="serverinfo", value="Show server information.")
@@ -442,7 +442,7 @@ async def help general(ctx):
 	await bot.send_message(channel, embed=embed)
 
 @bot.command(pass_context=True)
-async def help moderations(ctx):
+async def help_moderations(ctx):
 	embed = discord.Embed(title="ban", description="b.ban @user [your reason here]", color=0xFFFF)
 	embed.add_field(name="kick", value="b.kick @user [your reason here]")
 	embed.add_field(name="warn", value="b.warn @user [your reason here]")
@@ -454,7 +454,7 @@ async def help moderations(ctx):
 	await bot.send_message(channel, embed=embed)
 	
 @bot.command(pass_context=True)	
-async def help fun(ctx):
+async def help_fun(ctx):
 	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF))
 	embed.add_field(name='dice', value='50 50 chance', inline=True)
         embed.add_field(name='online', value='Members Online.', inline=True)

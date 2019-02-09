@@ -417,6 +417,7 @@ async def on_member_join(member):
 
 @bot.command(pass_context=True)
 async def help(ctx):
+    author = ctx.message.author
     embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
     embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
     embed.add_field(name='Command Prefix', value='**b.**', inline=True)

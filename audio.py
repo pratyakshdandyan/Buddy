@@ -457,7 +457,6 @@ async def help_moderations(ctx):
 async def help_fun(ctx):
 	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF)
 	embed.add_field(name="dice", value="50 50 chance")
-        embed.add_field(name="online", value="Members Online.")
         embed.add_field(name="offline", value="Members offline.")
 	embed.add_field(name="coinflip", value="50 50 chance of getting tails and heads.")
 	await bot.say(embed=embed)

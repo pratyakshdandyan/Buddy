@@ -4,6 +4,7 @@ import youtube_dl
 import os
 import typing
 import json
+import colorsys
 import discord, datetime, time
 from discord.ext import commands
 from discord.ext.commands import Bot

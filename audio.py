@@ -228,21 +228,6 @@ async def avatar(ctx, member: discord.Member):
   
 
 
-@bot.event
-
-async def on_reaction_add(reaction, user):
-   channel = reaction.message.channel
-
-   lol = get(user.server.channels, name="logs")
-   await bot.send_message(lol,'{} has added {} to the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
-  
-@bot.event
-async def on_reaction_remove(reaction, user):
-   channel = reaction.message.channel
-
-   lol = get(user.server.channels, name="logs")
-   await bot.send_message(lol,'{} has remove {} from the message: {}'.format(user.name, reaction.emoji, reaction.message.content))
-  
 
 @bot.command(pass_context=True)
 async def clear(ctx, number):
@@ -424,80 +409,102 @@ async def setname(ctx, *, name):
 
        
         
-    
-  
-    
+
 @bot.event
 async def on_member_join(member):
-    channel = get(member.server.channels, name="welcome")
-    embed = discord.Embed(title='**New Member Join**', description="Welcome,{} to the Chillspot! Be sure to have fun!🎉🎊".format(member.mention), colour=0x7ED6DE)
-    embed.set_author(name=member.name, icon_url=member.avatar_url)
-    embed.add_field(name="Name", value=member.name, inline=True)
-    embed.add_field(name="ID", value=member.id, inline=True)
-    embed.set_thumbnail(url=member.avatar_url)
-    await bot.send_message(channel, embed=embed)
-	
+    for channel in member.server.channels:
+        if channel.name == 'welcome':
+            embed = discord.Embed(title=f'Welcome {member.mention} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color = 0x36393E)
+            embed.add_field(name='__Thanks for joining__', value='**Hope you will be active here.**', inline=True)
+            embed.set_thumbnail(url=member.avatar_url) 
+            embed.add_field(name='__Join position__', value='{}'.format(str(member.server.member_count)), inline=True)
+            embed.add_field(name='Time of joining', value=member.joined_at)
+            await asyncio.sleep(0.4)
+            await bot.send_message(channel, embed=embed)
+
+
 @bot.event
 async def on_member_remove(member):
-    channel = get(member.server.channels, name="welcome")
-    embed = discord.Embed(title='**Member Left**', description="goodbye😞,{}".format(member.mention), colour=0xff00f6)
-    embed.set_author(name=member.name, icon_url=member.avatar_url)
-    embed.add_field(name="Name", value=member.name, inline=True)
-    embed.add_field(name="ID", value=member.id, inline=True)
-    embed.set_thumbnail(url=member.avatar_url)
-    await bot.send_message(channel, embed=embed)	
+    for channel in member.server.channels:
+        if channel.name == 'welcome':
+            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+            embed = discord.Embed(title=f'{member.name} just left {member.server.name}', description='Bye bye 👋! We will miss you 😢', color = discord.Color((r << 16) + (g << 8) + b))
+            embed.add_field(name='__User left__', value='**Hope you will be back soon 😕.**', inline=True)
+            embed.add_field(name='Your join position was', value=member.joined_at)
+            embed.set_thumbnail(url=member.avatar_url)
+            await bot.send_message(channel, embed=embed)
 
-@bot.command(pass_context=True)
-async def help(ctx):
-    author = ctx.message.author
-    embed = discord.Embed(title=None, description="Help command for yo bot", color=0x00ff00)
-    embed.add_field(name='Help Server',value='https://discord.gg/Em6GAWh', inline=True)
-    embed.add_field(name='Command Prefix', value='**b.**', inline=True)
-    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/498036721104060417/594245a2458d4163fc374abf987ed211.png?size=256')
-    embed.add_field(name='General commands', value='b.help_general - to get list of general commands', inline=True)	  
-    embed.add_field(name='moderation commands', value='b.help_moderations - to get list of moderation commands', inline=True)
-    embed.add_field(name='Fun commands', value='b.help_fun - to get list of fun commands', inline=True)
-    embed.set_footer(text="Requested by: " + author.name)
-    await bot.say(embed=embed)
 
-@bot.command(pass_context=True)
-async def help_general(ctx):
-	embed = discord.Embed(title="ping", description="pong....", color=0xFFFF)
-	embed.add_field(name="info", value="Show information about a user.")
-	embed.add_field(name="serverinfo", value="Show server information.")
-	embed.add_field(name="get_id", value="b.get_id")
-	embed.add_field(name="guildicon", value="b.guildicon")
-	embed.add_field(name="avatar", value="b.avatar @user [show user avatar")
-	embed.add_field(name="guildcount", value="b.guildcount")
-	embed.add_field(name="guildid", value="b.guildid")
-	await bot.say(embed=embed)
-	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
-	await bot.send_message(channel, embed=embed)
 
-@bot.command(pass_context=True)
-async def help_moderations(ctx):
-	embed = discord.Embed(title="ban", description="b.ban @user [your reason here]", color=0xFFFF)
-	embed.add_field(name="kick", value="b.kick @user [your reason here]")
-	embed.add_field(name="warn", value="b.warn @user [your reason here]")
-	embed.add_field(name="mute", value="b.mute @user [your reason here]")
-	embed.add_field(name="unmute", value="b.unmute @user [your reason here]")
-	embed.add_field(name="unban", value="b.unban user.id | for example d!unban 277983178914922497")
-	await bot.say(embed=embed)
-	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
-	await bot.send_message(channel, embed=embed)
+
+
+    
+    
+@bot.event
+async def on_reaction_add(reaction, user):
+  if reaction.emoji == '🇬':
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.add_field(name = 'b.invite',value ='Use it to invite our bot to your server',inline = False)
+    embed.add_field(name = "info", value="Show information about a user.",inline = False)
+    embed.add_field(name = "serverinfo", value="Show server information.",inline = False)
+    embed.add_field(name = "get_id", value="b.get_id",inline = False)
+    embed.add_field(name = "guildicon", value="b.guildicon")
+    embed.add_field(name = "avatar", value="b.avatar @user [show user avatar",inline = False)
+    embed.add_field(name = "guildcount", value="b.guildcount",inline = False)
+    embed.add_field(name = "guildid", value="b.guildid",inline = False)
+    await bot.send_message(user,embed=embed)
+  if reaction.emoji == '🇲':
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.set_author(name='Moderation Commands Help'inline = False)
+    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif'inline = False)
+    embed.add_field(name = 'ban(Ban members Permission Required) ',value ='Use it like ``b.ban @user`` to ban any user',inline = False)
+    embed.add_field(name = 'warn(Kick members Permission Required)',value ='Use it like ``b.warn @user <violation type>`` to warn any user',inline = False)    
+    embed.add_field(name = 'kick(Kick members Permission Required)',value ='Use it like ``b.kick @user`` to kick any user',inline = False)
+    embed.add_field(name = 'clear(Manage Messages Permission Required)',value ='Use it like ``b.clear <number>`` to clear any message',inline = False)
+    embed.add_field(name = 'mute(Mute members Permission Required)',value ='Use it like ``b.mute @user <time>`` to mute any user',inline = False)
+    embed.add_field(name = 'unmute(Mute members Permission Required) ',value ='Use it like ``b.unmute @user`` to unmute anyone',inline = False)
+    embed.add_field(name = "unban", value="b.unban user.id | for example d!unban 277983178914922497",inline = False)
+    await bot.send_message(user,embed=embed)
+  
+  if reaction.emoji == '🏵':
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.set_author(name='Fun Commands.')
+    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
+    embed.add_field(name = "dice", value="50 50 chance")
+    embed.add_field(name = "coinflip", value="50 50 chance of getting tails and heads.")
+    await bot.send_message(user,embed=embed)
+    
+ 
 	
-@bot.command(pass_context=True)	
-async def help_fun(ctx):
-	embed = discord.Embed(title=None, description="list of fun commands", color=0xFFFF)
-	embed.add_field(name="dice", value="50 50 chance")
-	embed.add_field(name="coinflip", value="50 50 chance of getting tails and heads.")
-	await bot.say(embed=embed)
-	embed = discord.Embed(title=f"User: {ctx.message.author.name} have used moderations command", description=f"ID: {ctx.message.author.id}", color=0xff9393)
-	await bot.send_message(channel, embed=embed)
-
-    
-    
-
+	
+@bot.command(pass_context = True)
+async def help(ctx):
+    if ctx.message.author.bot:
+      return
+    else:
+      author = ctx.message.author
+      r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+      embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+      embed.set_author(name='Help')
+      embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
+      embed.add_field(name = 'Having doubts? Join our server and clear your doubts. Server link:',value ='https://discord.gg/Em6GAWh',inline = False)
+      embed.add_field(name = 'React with 🇲 ',value ='Explaines all the commands which are only usable by Those who has moderation permissions. Like- Manage Messages, Kick/Ban Members,etc.',inline = False)
+      embed.add_field(name = 'React with 🇬 ',value ='Explaines all the commands which are usable by everyone.',inline = False)
+      embed.add_field(name = 'React with 🏵 ',value ='Explaines all the commands which are usable by everyone for fun.',inline = False)
+      dmmessage = await bot.send_message(author,embed=embed)
+      reaction1 = '🇲'
+      reaction2 = '🇬'
+      reaction3 = '🏵'
+      await bot.add_reaction(dmmessage, reaction1)
+      await bot.add_reaction(dmmessage, reaction2)
+      await bot.add_reaction(dmmessage, reaction3)
+      await bot.say('📨 Check DMs For Information')	
+	
+	
+	
 	
 	
 	

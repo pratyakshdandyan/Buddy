@@ -460,8 +460,8 @@ async def on_reaction_add(reaction, user):
   if reaction.emoji == '🇲':
     r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
     embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='Moderation Commands Help')
-    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif',inline = False)
+    embed.set_author(name='Moderation Commands Help.')
+    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
     embed.add_field(name = 'ban(Ban members Permission Required) ',value ='Use it like ``b.ban @user`` to ban any user',inline = False)
     embed.add_field(name = 'warn(Kick members Permission Required)',value ='Use it like ``b.warn @user <violation type>`` to warn any user',inline = False)    
     embed.add_field(name = 'kick(Kick members Permission Required)',value ='Use it like ``b.kick @user`` to kick any user',inline = False)

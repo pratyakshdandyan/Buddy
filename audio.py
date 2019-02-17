@@ -415,7 +415,7 @@ async def setname(ctx, *, name):
 async def on_member_join(member):
     for channel in member.server.channels:
         if channel.name == 'welcome':
-            embed = discord.Embed(title=f'Welcome {member.mention} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color = 0x36393E)
+            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color = 0x36393E)
             embed.add_field(name='__Thanks for joining__', value='**Hope you will be active here.**', inline=True)
             embed.set_thumbnail(url=member.avatar_url) 
             embed.add_field(name='__Join position__', value='{}'.format(str(member.server.member_count)), inline=True)
@@ -446,6 +446,7 @@ async def on_reaction_add(reaction, user):
   if reaction.emoji == '🇬':
     r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
     embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.set_author(name='__General Commands.__')
     embed.add_field(name = 'b.invite',value ='Use it to invite our bot to your server',inline = False)
     embed.add_field(name = "info", value="Show information about a user.",inline = False)
     embed.add_field(name = "serverinfo", value="Show server information.",inline = False)
@@ -455,10 +456,11 @@ async def on_reaction_add(reaction, user):
     embed.add_field(name = "guildcount", value="b.guildcount",inline = False)
     embed.add_field(name = "guildid", value="b.guildid",inline = False)
     await bot.send_message(user,embed=embed)
+
   if reaction.emoji == '🇲':
     r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
     embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='Moderation Commands Help',inline = False)
+    embed.set_author(name='__Moderation Commands Help__',inline = False)
     embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif',inline = False)
     embed.add_field(name = 'ban(Ban members Permission Required) ',value ='Use it like ``b.ban @user`` to ban any user',inline = False)
     embed.add_field(name = 'warn(Kick members Permission Required)',value ='Use it like ``b.warn @user <violation type>`` to warn any user',inline = False)    
@@ -472,7 +474,7 @@ async def on_reaction_add(reaction, user):
   if reaction.emoji == '🏵':
     r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
     embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='Fun Commands.')
+    embed.set_author(name='__Fun Commands.__')
     embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
     embed.add_field(name = "dice", value="50 50 chance")
     embed.add_field(name = "coinflip", value="50 50 chance of getting tails and heads.")

@@ -183,6 +183,14 @@ async def leave(ctx):
 async def ping(ctx):
     await bot.say(":ping_pong: ping!! xSSS")
     print ("user has pinged")
+	
+@bot.command(pass_context=True)
+async def echo(*args):
+	output = ' '
+	for word in args:
+		output += word
+		output += ' '
+		await bot.say(output)
 
 @bot.command(pass_context=True)
 async def info(ctx, user: discord.Member):

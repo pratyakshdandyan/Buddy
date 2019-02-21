@@ -186,7 +186,7 @@ async def ping(ctx):
 	
 @bot.command(pass_context=True)
 async def echo(*args):
-	output = ' '
+	output = ''
 	for word in args:
 		output += word
 		output += ' '

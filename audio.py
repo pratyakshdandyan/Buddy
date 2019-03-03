@@ -884,9 +884,9 @@ async def img(ctx):
     query = ctx.message.content[5:]
     url = 'http://version1.api.memegenerator.net//Generators_Search?q={}&apiKey={}'.format(
         query, img_api)
-    requests_link = requests.get(url).text
-    requests_json = json.loads(requests_link)
-    await bot.say(requests_json['result'][0]['imageUrl'])
+    rq_link = rq.get(url).text
+    rq_json = json.loads(rq_link)
+    await bot.say(rq_json['result'][0]['imageUrl'])
 
 
 

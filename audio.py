@@ -503,6 +503,7 @@ async def on_reaction_add(reaction, user):
     embed.add_field(name = "filpcoin", value="Use it like ``b.flipcoin`` [50 50 chance]")
     embed.add_field(name = 'joke',value ='Use it like ``b.joke`` to get a random joke')
     embed.add_field(name = "randomshow", value="Use it like ``b.randomshow`` [fun command]")
+    embed.add_field(name = "mal", value="Use it like ``b.mal <any anime show name>`` [fun command]")
     embed.add_field(name = 'Note:', value="**More commands being added soon!**")
     await bot.send_message(user,embed=embed)
     
@@ -814,7 +815,7 @@ async def setuplog(ctx):
 		
 		
 
-bot.command(pass_context=True)
+@bot.command(pass_context=True)
 async def mal(ctx):
         session = rq.Session()
         """SEARCH FOR ANIME USING MyAnimeList. EX: s.mal Mushishi"""

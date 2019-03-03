@@ -504,6 +504,7 @@ async def on_reaction_add(reaction, user):
     embed.add_field(name = 'joke',value ='Use it like ``b.joke`` to get a random joke')
     embed.add_field(name = "randomshow", value="Use it like ``b.randomshow`` [fun command]")
     embed.add_field(name = "mal", value="Use it like ``b.mal <any anime show name>`` [fun command]")
+    embed.add_field(name = "img", value="Use it like ``b.img <any animel name>`` [fun command]")
     embed.add_field(name = 'Note:', value="**More commands being added soon!**")
     await bot.send_message(user,embed=embed)
     
@@ -875,7 +876,17 @@ async def randomshow(ctx):
     await bot.say("**Name**: {}\n**Year**: {}\n**Poster**: {}".format(name, year, img))	
 	
 		
-
+@bot.command(pass_context=True)
+async def img(ctx):
+    """FAILED IMAGE GENERATOR BY KEYWORDS s.img dog"""
+    img_api = '142cd7a6-ce58-4647-a81d-8b82f9668b75'
+    
+    query = ctx.message.content[5:]
+    url = 'http://version1.api.memegenerator.net//Generators_Search?q={}&apiKey={}'.format(
+        query, img_api)
+    requests_link = requests.get(url).text
+    requests_json = json.loads(requests_link)
+    await bot.say(requests_json['result'][0]['imageUrl'])
 
 
 

@@ -813,7 +813,7 @@ async def setuplog(ctx):
       await bot.say(':white_check_mark:**Success setup**')	
 		
 		
-rq = requests
+
 bot.command(pass_context=True)
 async def mal(ctx):
         session = rq.Session()

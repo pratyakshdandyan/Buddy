@@ -36,11 +36,23 @@ def check_queue(id):
 
 
 
-
+async def status_task():
+    while True:
+        await bot.change_presence(game=discord.Game(name='b.help', type=2))
+        await asyncio.sleep(5)
+        await bot.change_presence(game=discord.Game(name=str(len(set(bot.get_all_members())))+' users', type=3))
+        await asyncio.sleep(5)
+        await bot.change_presence(game=discord.Game(name=str(len(bot.servers))+' servers', type=3))
+        await asyncio.sleep(5)
+        await bot.change_presence(game=discord.Game(name='music'))
+        await asyncio.sleep(5)
+        await bot.change_presence(game=discord.Game(name='I need some upvotes to grow ;('))
+        await asyncio.sleep(5)
 
 
 @bot.event 
 async def on_ready():
+	bot.loop.create_task(status_task())
 	print('Logged in as')
 	print("User name:", bot.user.name)
 	print("User id:", bot.user.id)
@@ -126,11 +138,11 @@ async def _play(ctx, *, name):
 	url = ('http://www.youtube.com'+a0['href'])
 	server = ctx.message.server
 	voice_bot = bot.voice_client_in(server)
-	player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
+	player = await voice_bot.create_ytdl_player(url, after=lambda: check_queue(server.id))
 	players[server.id] = player
 	print("User: {} From Server: {} is playing {}".format(author, server, title))
 	player.start()
-	embed = discord.Embed(description="**__Song Play By MUZICAL DOCTORB__**")
+	embed = discord.Embed(description="**__Song Play By BUDDY__**")
 	embed.set_thumbnail(url="https://i.pinimg.com/originals/03/2b/08/032b0870b9053a191b67dc8c3f340345.gif")
 	embed.add_field(name="Now Playing", value=title)
 	await bot.say(embed=embed)
@@ -148,8 +160,8 @@ async def queue(ctx, *, name):
 	a0 = [ x for x in div[0].find_all('a') if x.has_attr('title') ][0]
 	url = ('http://www.youtube.com'+a0['href'])
 	server = ctx.message.server
-	voice_client = client.voice_client_in(server)
-	player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
+	voice_bot = bot.voice_client_in(server)
+	player = await voice_bot.create_ytdl_player(url, after=lambda: check_queue(server.id))
 	
 	if server.id in queues:
 		queues[server.id].append(player)

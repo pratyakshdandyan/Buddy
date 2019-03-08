@@ -38,11 +38,12 @@ def check_queue(id):
 
 
 
-@bot.event
+@client.event 
 async def on_ready():
-   bot.loop.create_task(all_false())
-   await bot.change_presence(game=discord.Game(name='b.help'))
-   print(bot.user.name)
+	print('Logged in as')
+	print("User name:", client.user.name)
+	print("User id:", client.user.id)
+	print('---------------')
     
 
 async def audio_player_task():

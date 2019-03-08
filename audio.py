@@ -13,57 +13,30 @@ from time import localtime, strftime
 from discord.utils import get,find
 import requests as rq
 import random
+from discord import opus
+
 
 start_time = time.time()
 
 bot=commands.Bot(command_prefix='b.')
+songs = asyncio.Queue()
+play_next_song = asyncio.Event()
 bot.remove_command('help')
-
-from discord import opus
-OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll',
-             'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
-
-
-def load_opus_lib(opus_libs=OPUS_LIBS):
-    if opus.is_loaded():
-        return True
-
-    for opus_lib in opus_libs:
-            try:
-                opus.load_opus(opus_lib)
-                return
-            except OSError:
-                pass
-
-    raise RuntimeError('Could not load an opus lib. Tried %s' %
-                       (', '.join(opus_libs)))
-load_opus_lib()
-
-in_voice=[]
 
 
 players = {}
-songs = {}
-playing = {}
+queues = {}
+
+def check_queue(id):
+	if queues[id] != []:
+		player = queues[id].pop(0)
+		players[id] = player
+		player.start()
 
 
-async def all_false():
-    for i in bot.servers:
-        playing[i.id]=False
 
 
-async def checking_voice(ctx):
-    await asyncio.sleep(130)
-    if playing[ctx.message.server.id]== False:
-        try:
-            pos = in_voice.index(ctx.message.server.id)
-            del in_voice[pos]
-            server = ctx.message.server
-            voice_client = bot.voice_client_in(server)
-            await voice_client.disconnect()
-            await bot.say("{} left because there was no audio playing for a while".format(bot.user.name))
-        except:
-            pass
+
 
 @bot.event
 async def on_ready():
@@ -71,28 +44,136 @@ async def on_ready():
    await bot.change_presence(game=discord.Game(name='b.help'))
    print(bot.user.name)
     
+
+async def audio_player_task():
+    while True:
+        play_next_song.clear()
+        current = await songs.get()
+        current.start()
+        await play_next_song.wait()
+
+
+def toggle_next():
+    client.loop.call_soon_threadsafe(play_next_song.set)
+
+
 @bot.command(pass_context=True)
-async def join(ctx):
+async def plays(ctx, url):
+	if not client.is_voice_connected(ctx.message.server):
+		voice = await client.join_voice_channel(ctx.message.author.voice_channel)
+	else:
+		voice = client.voice_client_in(ctx.message.server)
+		
+		player = await voice.create_ytdl_player(url, after=toggle_next)
+		await songs.put(player)
+	
+	
+	
+	
+    
+@bot.command(name="join", pass_context=True, no_pm=True)
+async def _join(ctx):
+    user = ctx.message.author
     channel = ctx.message.author.voice.voice_channel
     await bot.join_voice_channel(channel)
-    in_voice.append(ctx.message.server.id)
-    await bot.say("JOIN")
+    embed = discord.Embed(colour=user.colour)
+    embed.add_field(name="Successfully connected to voice channel:", value=channel)
+    await bot.say(embed=embed)
+	
+@bot.command(name="leave", pass_context=True, no_pm=True)
+async def _leave(ctx):
+    user = ctx.message.author
+    server = ctx.message.server
+    channel = ctx.message.author.voice.voice_channel
+    voice_client = client.voice_client_in(server)
+    await voice_client.disconnect()
+    embed = discord.Embed(colour=user.colour)
+    embed.add_field(name="Successfully disconnected from:", value=channel)
+    await bot.say(embed=embed)
 
-async def player_in(con):  # After function for music
-    try:
-        if len(songs[con.message.server.id]) == 0:  # If there is no queue make it False
-            playing[con.message.server.id] = False
-            bot.loop.create_task(checking_voice(con))
-    except:
-        pass
-    try:
-        if len(songs[con.message.server.id]) != 0:  # If queue is not empty
-            # if audio is not playing and there is a queue
-            songs[con.message.server.id][0].start()  # start it
-            await bot.send_message(con.message.channel, '```Now queueed```')
-            del songs[con.message.server.id][0]  # delete list afterwards
-    except:
-        pass
+@bot.command(pass_context=True)
+async def pause(ctx):
+    user = ctx.message.author
+    id = ctx.message.server.id
+    players[id].pause()
+    embed = discord.Embed(colour=user.colour)
+    embed.add_field(name="Player Paused", value=f"Requested by {ctx.message.author.name}")
+    await bot.say(embed=embed)
+
+@bot.command(pass_context=True)
+async def skip(ctx):
+    user = ctx.message.author
+    id = ctx.message.server.id
+    players[id].stop()
+    embed = discord.Embed(colour=user.colour)
+    embed.add_field(name="Player Skipped", value=f"Requested by {ctx.message.author.name}")
+    await bot.say(embed=embed)
+	
+@bot.command(name="play", pass_context=True)
+async def _play(ctx, *, name):
+	author = ctx.message.author
+	name = ctx.message.content.replace("m.play ", '')
+	fullcontent = ('http://www.youtube.com/results?search_query=' + name)
+	text = requests.get(fullcontent).text
+	soup = bs4.BeautifulSoup(text, 'html.parser')
+	img = soup.find_all('img')
+	div = [ d for d in soup.find_all('div') if d.has_attr('class') and 'yt-lockup-dismissable' in d['class']]
+	a = [ x for x in div[0].find_all('a') if x.has_attr('title') ]
+	title = (a[0]['title'])
+	a0 = [ x for x in div[0].find_all('a') if x.has_attr('title') ][0]
+	url = ('http://www.youtube.com'+a0['href'])
+	server = ctx.message.server
+	voice_client = client.voice_client_in(server)
+	player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
+	players[server.id] = player
+	print("User: {} From Server: {} is playing {}".format(author, server, title))
+	player.start()
+	embed = discord.Embed(description="**__Song Play By MUZICAL DOCTORB__**")
+	embed.set_thumbnail(url="https://i.pinimg.com/originals/03/2b/08/032b0870b9053a191b67dc8c3f340345.gif")
+	embed.add_field(name="Now Playing", value=title)
+	await bot.say(embed=embed)
+	
+@bot.command(pass_context=True)
+async def queue(ctx, *, name):
+	name = ctx.message.content.replace("m.queue ", '')
+	fullcontent = ('http://www.youtube.com/results?search_query=' + name)
+	text = requests.get(fullcontent).text
+	soup = bs4.BeautifulSoup(text, 'html.parser')
+	img = soup.find_all('img')
+	div = [ d for d in soup.find_all('div') if d.has_attr('class') and 'yt-lockup-dismissable' in d['class']]
+	a = [ x for x in div[0].find_all('a') if x.has_attr('title') ]
+	title = (a[0]['title'])
+	a0 = [ x for x in div[0].find_all('a') if x.has_attr('title') ][0]
+	url = ('http://www.youtube.com'+a0['href'])
+	server = ctx.message.server
+	voice_client = client.voice_client_in(server)
+	player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
+	
+	if server.id in queues:
+		queues[server.id].append(player)
+	else:
+		queues[server.id] = [player]
+	embed = discord.Embed(description="**__Song Play By MUZICAL DOCTORB__**")
+	embed.add_field(name="Video queued", value=title)
+	await bot.say(embed=embed)
+
+@bot.command(pass_context=True)
+async def resume(ctx):
+    user = ctx.message.author
+    id = ctx.message.server.id
+    players[id].resume()
+    embed = discord.Embed(colour=user.colour)
+    embed.add_field(name="Player Resumed", value=f"Requested by {ctx.message.author.name}")
+    await bot.say(embed=embed)	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     
     
     

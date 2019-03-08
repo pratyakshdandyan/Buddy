@@ -41,8 +41,8 @@ def check_queue(id):
 @bot.event 
 async def on_ready():
 	print('Logged in as')
-	print("User name:", client.user.name)
-	print("User id:", client.user.id)
+	print("User name:", bot.user.name)
+	print("User id:", bot.user.id)
 	print('---------------')
     
 

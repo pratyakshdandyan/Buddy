@@ -38,7 +38,7 @@ def check_queue(id):
 
 
 
-@client.event 
+@bot.event 
 async def on_ready():
 	print('Logged in as')
 	print("User name:", client.user.name)
@@ -55,7 +55,7 @@ async def audio_player_task():
 
 
 def toggle_next():
-    client.loop.call_soon_threadsafe(play_next_song.set)
+    bot.loop.call_soon_threadsafe(play_next_song.set)
 
 
 @bot.command(pass_context=True)

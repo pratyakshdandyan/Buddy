@@ -5,6 +5,7 @@ import os
 import typing
 import json
 import colorsys
+import requests, bs4
 import discord, datetime, time
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -60,10 +61,10 @@ def toggle_next():
 
 @bot.command(pass_context=True)
 async def plays(ctx, url):
-	if not client.is_voice_connected(ctx.message.server):
-		voice = await client.join_voice_channel(ctx.message.author.voice_channel)
+	if not bot.is_voice_connected(ctx.message.server):
+		voice = await bot.join_voice_channel(ctx.message.author.voice_channel)
 	else:
-		voice = client.voice_client_in(ctx.message.server)
+		voice = bot.voice_client_in(ctx.message.server)
 		
 		player = await voice.create_ytdl_player(url, after=toggle_next)
 		await songs.put(player)
@@ -86,8 +87,8 @@ async def _leave(ctx):
     user = ctx.message.author
     server = ctx.message.server
     channel = ctx.message.author.voice.voice_channel
-    voice_client = client.voice_client_in(server)
-    await voice_client.disconnect()
+    voice_bot = bot.voice_client_in(server)
+    await voice_bot.disconnect()
     embed = discord.Embed(colour=user.colour)
     embed.add_field(name="Successfully disconnected from:", value=channel)
     await bot.say(embed=embed)
@@ -113,7 +114,7 @@ async def skip(ctx):
 @bot.command(name="play", pass_context=True)
 async def _play(ctx, *, name):
 	author = ctx.message.author
-	name = ctx.message.content.replace("m.play ", '')
+	name = ctx.message.content.replace("b.play ", '')
 	fullcontent = ('http://www.youtube.com/results?search_query=' + name)
 	text = requests.get(fullcontent).text
 	soup = bs4.BeautifulSoup(text, 'html.parser')
@@ -124,7 +125,7 @@ async def _play(ctx, *, name):
 	a0 = [ x for x in div[0].find_all('a') if x.has_attr('title') ][0]
 	url = ('http://www.youtube.com'+a0['href'])
 	server = ctx.message.server
-	voice_client = client.voice_client_in(server)
+	voice_bot = bot.voice_client_in(server)
 	player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
 	players[server.id] = player
 	print("User: {} From Server: {} is playing {}".format(author, server, title))

@@ -196,13 +196,6 @@ async def ping(ctx):
     await bot.say(":ping_pong: ping!! xSSS")
     print ("user has pinged")
 	
-@bot.command(pass_context=True)
-async def echo(*args):
-	output = ''
-	for word in args:
-		output += word
-		output += ' '
-		await bot.say(output)
 
 @bot.command(pass_context=True)
 async def info(ctx, user: discord.Member):
@@ -240,11 +233,22 @@ async def serverinfo(ctx):
       
 
 
- 
-@bot.command(pass_context=True, no_pm=True)
-async def avatar(ctx, member: discord.Member):
-    """User Avatar"""
-    await bot.reply("{}".format(member.avatar_url))
+@bot.command(pass_context = True)
+async def avatar(ctx, user: discord.Member=None):
+    if user is None:
+        r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+        embed = discord.Embed(title=f'Avatar', description='Avatar is profile picture of a user in discord', color = discord.Color((r << 16) + (g << 8) + b))
+        embed.add_field(name='User: {}'.format(ctx.message.author.name), value='Avatar:', inline=True)
+        embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/482828147155402752/7a8a3345b2eb827587710568eb1655a8.webp?size=1024') 
+        embed.set_image(url = ctx.message.author.avatar_url)
+        await bot.say(embed=embed)
+    else:
+        r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+        embed = discord.Embed(title=f'Avatar', description='Avatar is profile picture of a user in discord', color = discord.Color((r << 16) + (g << 8) + b))
+        embed.add_field(name='User: {}'.format(user.name), value='Avatar:', inline=True)
+        embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/482828147155402752/7a8a3345b2eb827587710568eb1655a8.webp?size=1024') 
+        embed.set_image(url = user.avatar_url)
+        await bot.say(embed=embed)	
 
   
 
@@ -361,20 +365,7 @@ async def invite():
   	await bot.say("\U0001f44d")
   	await bot.whisper("Add me with this link {}".format(discord.utils.oauth_url(bot.user.id)))
 
-@bot.event
-async def send_cmd_help(ctx):
-    if ctx.invoked_subcommand:
-        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
-        for page in pages:
-            em = discord.Embed(description=page.strip("```").replace('<', '[').replace('>', ']'),
-                               color=discord.Color.blue())
-            await bot.send_message(ctx.message.channel, embed=em)
-    else:
-        pages = bot.formatter.format_help_for(ctx, ctx.command)
-        for page in pages:
-            em = discord.Embed(description=page.strip("```").replace('<', '[').replace('>', ']'),
-                               color=discord.Color.blue())
-            await bot.send_message(ctx.message.channel, embed=em)    
+
     
 @bot.command()
 async def guildcount():
@@ -393,37 +384,6 @@ async def guildid(ctx):
 async def guildicon(ctx):
     """Guild Icon"""
     await bot.reply("{}".format(ctx.message.server.icon_url))
-    
-@bot.command(pass_context=True, hidden=True)
-async def setgame(ctx, *, game):
-    if ctx.message.author.id not in owner:
-        return
-    game = game.strip()
-    if game != "":
-        try:
-            await bot.change_presence(game=discord.Game(name=game))
-        except:
-            await bot.say("Failed to change game")
-        else:
-            await bot.say("Successfuly changed game to {}".format(game))
-    else:
-        await bot.send_cmd_help(ctx)    
-    
-    
-@bot.command(pass_context=True, hidden=True)
-async def setname(ctx, *, name):
-    if ctx.message.author.id not in owner:
-        return
-    name = name.strip()
-    if name != "":
-        try:
-            await bot.edit_profile(username=name)
-        except:
-            await bot.say("Failed to change name")
-        else:
-            await bot.say("Successfuly changed name to {}".format(name))
-    else:
-        await bot.send_cmd_help(ctx)
         
         
 
@@ -435,7 +395,7 @@ async def setname(ctx, *, name):
 async def on_member_join(member):
     for channel in member.server.channels:
         if channel.name == 'welcome':
-            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color = 0x36393E)
+            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color=0x7ED6DE)
             embed.add_field(name='__Thanks for joining__', value='**Hope you will be active here.**', inline=True)
             embed.set_thumbnail(url=member.avatar_url) 
             embed.add_field(name='__Join position__', value='{}'.format(str(member.server.member_count)), inline=True)
@@ -455,105 +415,294 @@ async def on_member_remove(member):
             embed.set_thumbnail(url=member.avatar_url)
             await bot.send_message(channel, embed=embed)
 
-
-
-
-
-    
-    
-@bot.event
-async def on_reaction_add(reaction, user):
-  if reaction.emoji == '🇬':
-    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
-    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='General Commands.')
-    embed.add_field(name = 'b.invite',value ='Use it to invite our bot to your server',inline = False)
-    embed.add_field(name = "info", value="Show information about a user.",inline = False)
-    embed.add_field(name = "serverinfo", value="Show server information.",inline = False)
-    embed.add_field(name = "get_id", value="b.get_id",inline = False)
-    embed.add_field(name = "guildicon", value="b.guildicon")
-    embed.add_field(name = "avatar", value="b.avatar @user [show user avatar",inline = False)
-    embed.add_field(name = "guildcount", value="b.guildcount",inline = False)
-    embed.add_field(name = "guildid", value="b.guildid",inline = False)
-    embed.add_field(name = 'botinfo',value ='Use it like ``b.botinfo`` to get some basic info of bot',inline = False)
-    embed.add_field(name = 'membercount', value='Use it like ``b.membercount`` to see how many members are in the server.', inline = False)	
-    await bot.send_message(user,embed=embed)
-
-  if reaction.emoji == '🇲':
-    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
-    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='Moderation Commands Help.')
-    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
-    embed.add_field(name = 'ban(Ban members Permission Required) ',value ='Use it like ``b.ban @user`` to ban any user',inline = False)
-    embed.add_field(name = 'warn(Kick members Permission Required)',value ='Use it like ``b.warn @user <violation type>`` to warn any user',inline = False)    
-    embed.add_field(name = 'kick(Kick members Permission Required)',value ='Use it like ``b.kick @user`` to kick any user',inline = False)
-    embed.add_field(name = 'clear(Manage Messages Permission Required)',value ='Use it like ``b.clear <number>`` to clear any message',inline = False)
-    embed.add_field(name = 'mute(Mute members Permission Required)',value ='Use it like ``b.mute @user <time>`` to mute any user',inline = False)
-    embed.add_field(name = 'unmute(Mute members Permission Required) ',value ='Use it like ``b.unmute @user`` to unmute anyone',inline = False)
-    embed.add_field(name = "unban", value="b.unban user.id | for example b.unban 277983178914922497",inline = False)
-    embed.add_field(name = 'setupwelcomer(Admin Permission required)',value ='Simply use it to make a channel named welcome so that bot will send welcome and leaves logs in that channel.',inline = False)
-    embed.add_field(name = 'setuplog(Admin Permission required)',value ='Simply use it to make a channel named logs so that bot will send logs in that channel.',inline = False)
-    embed.add_field(name = 'Dm(Admin Permission required)', value="Use it like ``b.dm @user <text>`` to send dm any one",inline = False)
-    embed.add_field(name = 'say(Admin permission required)',value ='Use it like ``b.say <text>``',inline = False)
-    embed.add_field(name = 'announce(Admin permission required)', value="Use it like ``b.announce #channel <text>``",inline = False)
-
-
-
-    await bot.send_message(user,embed=embed)
-  
-  if reaction.emoji == '🏵':
-    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
-    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-    embed.set_author(name='Fun Commands.')
-    embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
-    embed.add_field(name = "dice", value="50 50 chance")
-    embed.add_field(name = "coinflip", value="50 50 chance of getting tails and heads.")
-    embed.add_field(name = "kiss", value="Use it like ``b.kiss @user``")
-    embed.add_field(name = "hug", value="Use it like ``b.hug @user``")
-    embed.add_field(name = "slap", value="Use it like ``b.slap @user``")
-    embed.add_field(name = "rolldice", value="Use it like ``b.rolldice`` [fun command]")
-    embed.add_field(name = "filpcoin", value="Use it like ``b.flipcoin`` [50 50 chance]")
-    embed.add_field(name = 'joke',value ='Use it like ``b.joke`` to get a random joke')
-    embed.add_field(name = "randomshow", value="Use it like ``b.randomshow`` [fun command]")
-    embed.add_field(name = "mal", value="Use it like ``b.mal <any anime show name>`` [fun command]")
-    embed.add_field(name = "img", value="Use it like ``b.img <any animel name>`` [fun command]")
-    embed.add_field(name = 'Note:', value="**More commands being added soon!**")
-    await bot.send_message(user,embed=embed)
-    
- 
-	
-	
+		
 @bot.command(pass_context = True)
 async def help(ctx):
-    if ctx.message.author.bot:
-      return
+    server = ctx.message.server
+    author = ctx.message.author
+    embed = discord.Embed(title=None, description="**Help command for Buddy**", color=0xff00f6)		
+    embed.add_field(name="Moderations Commands:", value="``kick`` ``ban`` ``mute`` ``unmute`` ``clear`` ``say`` ``dm`` ``unban`` ``setupwelcomer`` ``setuplog`` ``announce`` ``embed``",inline = False)
+    embed.add_field(name="Action Commands:", value="``poke`` ``kiss`` ``slap`` ``hug`` ``bite`` ``pat`` ``bloodsuck`` ``cuddle`` ``thuglife`` ``burned`` ``savage`` ``facedesk`` ``highfive``",inline = False)		      
+    embed.add_field(name="General Commands:", value="``ping`` ``info`` ``serverinfo`` ``membercount`` ``gulidicon`` ``guildcount`` ``online`` ``offline`` ``stats`` ``joined``",inline = False) 		
+    embed.add_field(name="Fun Commands:", value="``kiss`` ``meme`` ``slap`` ``hug`` ``joke`` ``movie`` ``tweet`` ``happybirthday`` ``flipcoin`` ``rolldice`` ``coinflip`` ``dice``",inline = False)	
+    embed.add_field(name="Image Commands:", value="``meme`` ``dog`` ``fox`` ``cat`` ``img`` ``randomshow`` ``neko`` ``buddy``",inline = False)	
+    embed.add_field(name="Misc Commands:", value="``tweet`` ``trans`` ``eightball``",inline = False)
+    embed.add_field(name="Informational Commands:", value="``movie`` ``mal``",inline = False)
+    embed.add_field(name='Need more help?', value="Join our support server at https://discord.gg/Em6GAWh")
+    embed.set_thumbnail(url=server.icon_url)
+    embed.set_footer(text="Requested by: " + author.name)
+    await bot.say(embed=embed)			
+		
+		
+@bot.command(pass_context=True)
+async def pat(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>pat <mention a user>```")
     else:
-      author = ctx.message.author
-      r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
-      embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
-      embed.set_author(name='Help')
-      embed.set_image(url = 'https://image.ibb.co/caM2BK/help.gif')
-      embed.add_field(name = 'Having doubts? Join our server and clear your doubts. Server link:',value ='https://discord.gg/Em6GAWh',inline = False)
-      embed.add_field(name = 'React with 🇲 ',value ='Explaines all the commands which are only usable by Those who has moderation permissions. Like- Manage Messages, Kick/Ban Members,etc.',inline = False)
-      embed.add_field(name = 'React with 🇬 ',value ='Explaines all the commands which are usable by everyone.',inline = False)
-      embed.add_field(name = 'React with 🏵 ',value ='Explaines all the commands which are usable by everyone for fun.',inline = False)
-      dmmessage = await bot.send_message(author,embed=embed)
-      reaction1 = '🇲'
-      reaction2 = '🇬'
-      reaction3 = '🏵'
-      await bot.add_reaction(dmmessage, reaction1)
-      await bot.add_reaction(dmmessage, reaction2)
-      await bot.add_reaction(dmmessage, reaction3)
-      await bot.say('📨 Check DMs For Information')	
+        randomurl = ["https://thumbs.gfycat.com/ImpurePleasantArthropods-small.gif", "https://i.imgur.com/4ssddEQ.gif", "https://thumbs.gfycat.com/ShockingFaroffJavalina-size_restricted.gif", "http://i.imgur.com/laEy6LU.gif", "https://i.imgur.com/NNOz81F.gif"]
+        embed = discord.Embed(title=f"{user.name} You just got a patted from {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)		
+	
+	
+@bot.command(pass_context=True)
+async def bite(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>bite <mention a user>```")
+    else:
+        randomurl = ["https://media.giphy.com/media/fhkRUj3BWmMnu/giphy.gif", "https://gifimage.net/wp-content/uploads/2017/09/anime-bite-gif-7.gif", "https://toxicmuffin.files.wordpress.com/2013/04/tumblr_mkzqyghtsm1r0rp7xo1_400.gif", "https://78.media.tumblr.com/tumblr_m5vv15KoxB1qklrzno2_500.gif", "https://media1.tenor.com/images/06f88667b86a701b1613bbf5fb9205e9/tenor.gif"]
+        embed = discord.Embed(title=f"{user.name} you have been bitten by {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)	
+	
+@bot.command(pass_context=True)
+async def poke(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>poke <mention a user>```")
+    else:
+        randomurl = ["https://media.giphy.com/media/WvVzZ9mCyMjsc/giphy.gif", "https://gifimage.net/wp-content/uploads/2017/09/anime-poke-gif-11.gif", "https://media1.tenor.com/images/1a64ac660387543c5b779ba1d7da2c9e/tenor.gif", "https://i.gifer.com/bun.gif", "https://thumbs.gfycat.com/KeyImaginativeBushsqueaker-size_restricted.gif"]
+        embed = discord.Embed(title=f"{user.name} you have been poked by {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)	
+	
+@bot.command(pass_context=True)
+async def bloodsuck(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>bloodsuck <mention a user>```")
+    else:
+        randomurl = ["https://78.media.tumblr.com/tumblr_m5vv15KoxB1qklrzno2_500.gif", "https://i1.wp.com/24.media.tumblr.com/tumblr_mcj6b5gsSr1riv2oqo1_500.gif", "https://i.imgur.com/UbaeYIq.gif", "https://i.imgur.com/CtwmzpG.gif", "https://images.gr-assets.com/hostedimages/1438121044ra/15667005.gif"]
+        embed = discord.Embed(title=f"{user.name} is sucking the blood of {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)	
+
+	
+@bot.command(pass_context=True)
+async def cuddle(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>cuddle <mention a user>```")
+    else:
+        randomurl = ["https://media.giphy.com/media/143v0Z4767T15e/giphy.gif", "https://i.imgur.com/nrdYNtL.gif", "https://media1.tenor.com/images/8f8ba3baeecdf28f3e0fa7d4ce1a8586/tenor.gif", "https://66.media.tumblr.com/18fdf4adcb5ad89f5469a91e860f80ba/tumblr_oltayyHynP1sy5k7wo1_400.gif", "https://i.imgur.com/wOmoeF8.gif"]
+        embed = discord.Embed(title=f"{user.name} you have been cuddled by {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)	
+	
+@bot.command(pass_context=True)
+async def highfive(ctx, user: discord.Member = None):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    if user == None:
+        await bot.say(f"{ctx.message.author.mention} ```Proper usage is\n\n>highfive <mention a user>```")
+    else:
+        randomurl = ["http://rs584.pbsrc.com/albums/ss289/vampgirl17/Danny%20Phantom/hifive.gif", "https://thumbs.gfycat.com/ActualWarmheartedDungbeetle-small.gif", "https://media1.tenor.com/images/aed08ae3d802b0de9791057e2dadf7a6/tenor.gif", "https://i.pinimg.com/originals/d2/b2/7c/d2b27cdf7a0d320e18efbe21dfca9a50.gif", "https://media1.tenor.com/images/9730876547cb3939388cf79b8a641da9/tenor.gif"]
+        embed = discord.Embed(title=f"{user.name} highfives {ctx.message.author.name}", color = discord.Color((r << 16) + (g << 8) + b))
+        embed.set_image(url=random.choice(randomurl))
+        await bot.say(embed=embed)		
+		
+@bot.command(pass_context=True)
+async def savage(ctx):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    gifs = ["https://media.giphy.com/media/s7eezS6vxhACk/giphy.gif", "https://m.popkey.co/5bd499/gK00J_s-200x150.gif", "https://i.imgur.com/XILk4Xv.gif", "https://media.giphy.com/media/KxP8Ik0T4iMa4/giphy.gif", "https://media.giphy.com/media/l378nQdVg2NK5oyqs/giphy.gif", "https://gifimage.net/wp-content/uploads/2017/08/savage-gif-9.gif"]
+    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.set_image(url=random.choice(gifs))
+    await bot.say(embed=embed)
+    await bot.delete_message(ctx.message)
+
+	
+@bot.command(pass_context=True)
+async def thuglife(ctx):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    gifs = ["https://media.giphy.com/media/kU1qORlDWErOU/giphy.gif", "https://media.giphy.com/media/EFf8O7znQ6zRK/giphy.gif", "https://i.imgur.com/XILk4Xv.gif", "http://www.goodbooksandgoodwine.com/wp-content/uploads/2011/11/make-it-rain-guys.gif", "https://media.giphy.com/media/kU1qORlDWErOU/giphy.gif", "https://i.makeagif.com/media/5-05-2016/61C2G8.gif", "http://image.blingee.com/images19/content/output/000/000/000/819/863226892_1557262.gif"]
+    embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+    embed.set_image(url=random.choice(gifs))
+    await bot.say(embed=embed)
+    await bot.delete_message(ctx.message)		
+		
+		
+@bot.command(pass_context = True)
+async def meme(ctx):
+    r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+    embed = discord.Embed(title='Random Meme', description='from reddit', color = discord.Color((r << 16) + (g << 8) + b))
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://api.reddit.com/r/me_irl/random") as r:
+            data = await r.json()
+            embed.set_image(url=data[0]["data"]["children"][0]["data"]["url"])
+            embed.set_footer(text=f'Requested by: {ctx.message.author.display_name}', icon_url=f'{ctx.message.author.avatar_url}')
+            embed.timestamp = datetime.datetime.utcnow()
+            await bot.say(embed=embed)		
+	
+@bot.command(pass_context=True)
+async def movie(ctx, *, name:str=None):
+        r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+        await bot.send_typing(ctx.message.channel)
+        if name is None:
+                embed=discord.Embed(description = "Please specify a movie, *eg. d?movie Inception*", color = discord.Color((r << 16) + (g << 8) + b))
+                x = await bot.say(embed=embed)
+                await asyncio.sleep(5)
+                return await bot.delete_message(x)
+        key = "4210fd67"
+        url = "http://www.omdbapi.com/?t={}&apikey={}".format(name, key)
+        response = requests.get(url)
+        x = json.loads(response.text)
+        embed=discord.Embed(title = "**{}**".format(name).upper(), description = "Here is your movie {}".format(ctx.message.author.name), color = discord.Color((r << 16) + (g << 8) + b))
+        if x["Poster"] != "N/A":
+            embed.set_thumbnail(url = x["Poster"])
+            embed.add_field(name = "__Title__", value = x["Title"])
+            embed.add_field(name = "__Released__", value = x["Released"])
+            embed.add_field(name = "__Runtime__", value = x["Runtime"])
+            embed.add_field(name = "__Genre__", value = x["Genre"])
+            embed.add_field(name = "__Director__", value = x["Director"])
+            embed.add_field(name = "__Writer__", value = x["Writer"])
+            embed.add_field(name = "__Actors__", value = x["Actors"])
+            embed.add_field(name = "__Plot__", value = x["Plot"])
+            embed.add_field(name = "__Language__", value = x["Language"])
+            embed.add_field(name = "__Imdb Rating__", value = x["imdbRating"]+"/10")
+            embed.add_field(name = "__Type__", value = x["Type"])
+            embed.set_footer(text = "Information from the OMDB API")
+            await bot.say(embed=embed)		
+	
+	
+@bot.command(pass_context=True)
+async def cat(ctx):
+        """
+        Function: Send random cat picture
+        Command: `d?cat`
+        Usage Example: `d?cat`
+        """
+        r = rq.Session().get('http://aws.random.cat/meow')
+        if r.status_code == 200:
+            emb = discord.Embed(title='Cat')
+            emb.set_image(url=r.json()['file'])
+            await bot.say(embed=emb)
+
+        if r.status_code != 200:
+            emb = discord.Embed(title='Error {}'.format(r.status_code))
+            emb.set_image(url='https://http.cat/{}'.format(r.status_code))
+            await bot.say(embed=emb)	
+	
+	
+@bot.command(pass_context=True)
+async def tweet(ctx, usernamename:str, *, txt:str):
+    url = f"https://nekobot.xyz/api/imagegen?type=tweet&username={usernamename}&text={txt}"
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(url) as r:
+            res = await r.json()
+            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+            embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+            embed.set_image(url=res['message'])
+            embed.title = "{} twitted: {}".format(usernamename, txt)
+            await bot.say(embed=embed)	
 	
 	
 	
+@bot.command(pass_context=True, aliases=['buddy'])
+async def dog(ctx):
+        """(d) random dog picture"""
+        print("★DOG★")
+        isVideo = True
+        while isVideo:
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get('https://random.dog/woof.json') as r:
+                    res = await r.json()
+                    res = res['url']
+                    cs.close()
+            if res.endswith('.mp4'):
+                pass
+            else:
+                isVideo = False
+        em = discord.Embed()
+        await bot.say(embed=em.set_image(url=res))	
 	
+@bot.command(pass_context=True, hidden=True, enabled=True)
+async def neko(ctx, nsfw:str="false"):
+        """
+        Function: Send random neko picture, adding nsfw will send nsfw ones
+        Command: `d?neko`
+        Usage Example: `d?neko` or `d?neko nsfw`
+        """
+        if nsfw.lower() == 'nsfw':
+            nsfw = 'true'
+        else:
+            nsfw = 'false'
+        img = rq.get(
+            'https://nekos.moe/api/v1/random/image?count=1&nsfw={}'.format(nsfw)).json()
+        url = 'https://http.cat/200'
+        emb = discord.Embed(title='Neko')
+        emb.set_image(
+            url='https://nekos.moe/image/{}'.format(img['images'][0]['id']))
+        await bot.say(embed=emb)		
 	
+@bot.command(pass_context=True)
+async def fox(ctx):
+        """
+        Function: Send random fox picture
+        Command: `d?fox`
+        Usage Example: `d?fox`
+        """
+
+        emb = discord.Embed(title=None)
+        r = rq.Session().get('https://randomfox.ca/floof/')
+        if r.status_code == 200:
+            emb.set_image(url=r.json()['image'])
+            await bot.say(embed=emb)
+        if r.status_code != 200:
+            emb = discord.Embed(title="Error {}".format(r.status_code))
+            emb.set_image(url='https://http.cat/{}'.format(r.status_code))
+            await bot.say(embed=emb)	
+
 	
+@bot.command(pass_context = True)
+async def eightball(ctx):
+        '''Answer a question with a response'''
+
+        responses = [
+            'It is certain',
+            'It is decidedly so',
+            'Without a doubt',
+            'Yes definitely',
+            'You may rely on it',
+            'As I see it, yes',
+            'Most likely',
+            'Outlook good',
+            'Yes',
+            'Signs point to yes',
+            'Reply hazy try again',
+            'Ask again later',
+            'Better not tell you now',
+            'Cannot predict now',
+            'Concentrate and ask again',
+            'Do not count on it',
+            'My reply is no',
+            'My sources say no',
+            'Outlook not so good',
+            'Very doubtful'
+        ]
+
+        random_number = random.randint(0, 19)
+        if random_number >= 0 and random_number <= 9:
+            embed = discord.Embed(color=0x60E87B)
+        elif random_number >= 10 and random_number <= 14:
+            embed = discord.Embed(color=0xECE357)
+        else:
+            embed = discord.Embed(color=0xD55050)
+
+        header = 'Magic/Eight ball says...'
+        text = responses[random_number]
+
+        embed.add_field(name=header, value=text, inline=True)
+        await bot.say(embed=embed)	
 	
-	
-	
+
+@bot.command(pass_context = True)
+async def happybirthday(ctx, *, msg = None):
+    if not msg: await client.say("Please specify a user to wish")
+    if '@here' in msg or '@everyone' in msg:
+      return
+    await bot.say('Happy birthday ' + msg + ' \nhttps://asset.holidaycardsapp.com/assets/card/b_day399-22d0564f899cecd0375ba593a891e1b9.png')
+    return		
 	
 	
 	

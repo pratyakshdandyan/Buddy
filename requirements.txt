@@ -4,3 +4,4 @@ youtube-dl
 PyNaCl
 requests
 bs4
+translate

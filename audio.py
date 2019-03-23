@@ -5,8 +5,10 @@ import os
 import typing
 import json
 import colorsys
+import translate
 import requests, bs4
 import discord, datetime, time
+from translate import Translator
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.ext.commands import has_permissions 
@@ -423,11 +425,11 @@ async def help(ctx):
     embed = discord.Embed(title=None, description="**Help command for Buddy**", color=0xff00f6)		
     embed.add_field(name="Moderations Commands:", value="``kick`` ``ban`` ``mute`` ``unmute`` ``clear`` ``say`` ``dm`` ``unban`` ``setupwelcomer`` ``setuplog`` ``announce`` ``embed``",inline = False)
     embed.add_field(name="Action Commands:", value="``poke`` ``kiss`` ``slap`` ``hug`` ``bite`` ``pat`` ``bloodsuck`` ``cuddle`` ``thuglife`` ``burned`` ``savage`` ``facedesk`` ``highfive``",inline = False)		      
-    embed.add_field(name="General Commands:", value="``ping`` ``info`` ``serverinfo`` ``membercount`` ``gulidicon`` ``guildcount`` ``online`` ``offline`` ``stats`` ``joined``",inline = False) 		
+    embed.add_field(name="General Commands:", value="``ping`` ``info`` ``serverinfo`` ``membercount`` ``gulidicon`` ``guildcount`` ``online`` ``offline`` ``stats`` ``joined`` ``botinfo``",inline = False) 		
     embed.add_field(name="Fun Commands:", value="``kiss`` ``meme`` ``slap`` ``hug`` ``joke`` ``movie`` ``tweet`` ``happybirthday`` ``flipcoin`` ``rolldice`` ``coinflip`` ``dice``",inline = False)	
     embed.add_field(name="Image Commands:", value="``meme`` ``dog`` ``fox`` ``cat`` ``img`` ``randomshow`` ``neko`` ``buddy``",inline = False)	
     embed.add_field(name="Misc Commands:", value="``tweet`` ``trans`` ``eightball``",inline = False)
-    embed.add_field(name="Informational Commands:", value="``movie`` ``mal``",inline = False)
+    embed.add_field(name="Informational Commands:", value="``movie`` ``mal`` ``randomshow``",inline = False)
     embed.add_field(name='Need more help?', value="Join our support server at https://discord.gg/Em6GAWh")
     embed.set_thumbnail(url=server.icon_url)
     embed.set_footer(text="Requested by: " + author.name)
@@ -746,6 +748,22 @@ async def offline(con):
         if i.status == discord.Status.offline:
             amt += 1
     await bot.send_message(con.message.channel, "**Currently `{}` Members Offline In `{}`**".format(amt,con.message.server.name))
+
+
+@bot.command(pass_context=True)
+async def trans(ctx, *args):
+    """Ex: '>trans en->de example' OR '>trans de Beispiel'"""
+    if "bugs" in args[0]:
+        await client.say("Wraith... bugs is not a language.")
+        return
+
+    if len(args[0]) == 2:
+        arr = [args[0], "en"]
+    else: arr = '{}'.format(args[0]).split('->')
+    t = Translator(from_lang=arr[0],to_lang=arr[1])
+    await bot.say('```' + t.translate(" ".join(args[1:])) + '```')
+
+
 
 
 

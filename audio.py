@@ -397,12 +397,28 @@ async def guildicon(ctx):
 async def on_member_join(member):
     for channel in member.server.channels:
         if channel.name == 'welcome':
-            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color=0x7ED6DE)
+            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check rules and never try to break any one of them', color = discord.Color((r << 16) + (g << 8) + b))
             embed.add_field(name='__Thanks for joining__', value='**Hope you will be active here.**', inline=True)
-            embed.set_thumbnail(url=member.avatar_url) 
+            embed.set_thumbnail(url='https://media.giphy.com/media/OkJat1YNdoD3W/giphy.gif') 
+            embed.set_image(url = member.avatar_url)
             embed.add_field(name='__Join position__', value='{}'.format(str(member.server.member_count)), inline=True)
             embed.add_field(name='Time of joining', value=member.joined_at)
-            await asyncio.sleep(0.4)
+            await bot.send_message(channel, embed=embed)
+            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+            embed = discord.Embed(color = discord.Color((r << 16) + (g << 8) + b))
+            embed.set_author(name='Welcome message')
+            embed.add_field(name = '__Welcome to Our Server__',value ='**Hope you will be active here. Check Our server rules and never try to break any rules. ',inline = False)
+            embed.set_image(url = 'https://media.giphy.com/media/OkJat1YNdoD3W/giphy.gif')
+            await bot.send_message(member,embed=embed)
+            print("Sent message to " + member.name)
+            channel = discord.utils.get(client.get_all_channels(), server__name='Buddy', name='buddy-servers-join-leave-log')
+            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
+            embed = discord.Embed(title=f'Welcome {member.name} to {member.server.name}', description='Do not forget to check <#474572305192845312> and never try to break any one of them', color = discord.Color((r << 16) + (g << 8) + b))
+            embed.add_field(name='__Thanks for joining__', value='**Hope you will be active here.**', inline=True)
+            embed.add_field(name='Your join position is', value=member.joined_at)
+            embed.set_image(url = 'https://media.giphy.com/media/OkJat1YNdoD3W/giphy.gif')
+            embed.set_thumbnail(url=member.avatar_url)
             await bot.send_message(channel, embed=embed)
 
 

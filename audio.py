@@ -269,7 +269,7 @@ async def clear(ctx, number):
 async def botinfo(ctx):
 	embed=discord.Embed(title="Bot name", description="buddy", color=0xFFFF00)
 	embed.add_field(name="Creator", value="Pratyaksh and Imran")
-	embed.add_field(name="Invite link", value="[Click Here!](https://discordapp.com/api/oauth2/authorize?client_id=498036721104060417&permissions=2146958839&scope=bot)")
+	embed.add_field(name="Invite link", value="[Click Here!](https://discordapp.com/api/oauth2/authorize?client_id=498036721104060417&permissions=8&scope=bot)")
 	embed.add_field(name="Prefix", value="b.")
 	await bot.say(embed=embed)
 

@@ -943,7 +943,7 @@ async def rolldice(ctx):
 
 
 @bot.command(pass_context = True)
-async def announce(ctx, channel: discord.Channel=None, *, msg: str=None):
+async def announce(ctx, channel: discord.Channel=None,*, msg: str=None):
     member = ctx.message.author
     if channel is None or msg is None:
         await bot.say('Invalid args. Use this command like ``d?announce #channel text here``')

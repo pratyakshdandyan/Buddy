@@ -941,22 +941,6 @@ async def rolldice(ctx):
 
 
 
-@bot.command(pass_context = True)
-async def announce(ctx, channel: discord.Channel=None, *, msg: str=None):
-    member = ctx.message.author
-    if channel is None or msg is None:
-        await bot.say('Invalid args. Use this command like ``d?announce #channel text here``')
-        return
-    else:
-        if member.server_permissions.administrator == False:
-            await bot.say('**You do not have permission to use this command**')
-            return
-        else:
-            r, g, b = tuple(int(x * 255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1))
-            embed=discord.Embed(title="Announcement", description="{}".format(msg), color = discord.Color((r << 16) + (g << 8) + b))
-            await bot.send_message(channel, embed=embed)
-            await bot.delete_message(ctx.message)
-
 
 	
 @bot.event
